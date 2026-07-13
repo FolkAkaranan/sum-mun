@@ -1,0 +1,334 @@
+Persisting failed: Unable to write SST file 00000410.sst
+
+Caused by:
+    The system cannot find the path specified. (os error 3)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (28348) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 103627)
+
+Caused by:
+    0: Looking up task storage for TaskId 103627 from database failed
+    1: Unable to open static sorted file referenced from 00000335.meta
+    2: Unable to open static sorted file 00000330.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000330.sst
+    4: The system cannot find the path specified. (os error 3)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread '<unnamed>' (8420) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 103630)
+
+Caused by:
+    0: Looking up task storage for TaskId 103630 from database failed
+    1: Unable to open static sorted file referenced from 00000322.meta
+    2: Unable to open static sorted file 00000318.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000318.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (30508) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 103634)
+
+Caused by:
+    0: Looking up task storage for TaskId 103634 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+⨯ Error: ENOENT: no such file or directory, open 'E:\ClaudeProject\9_Gacha\.next\dev\server\app\page\build-manifest.json'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'E:\\ClaudeProject\\9_Gacha\\.next\\dev\\server\\app\\page\\build-manifest.json'
+}
+
+thread 'tokio-runtime-worker' (28348) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)
+
+Caused by:
+    0: Looking up task storage for TaskId 103646 from database failed
+    1: Unable to open static sorted file referenced from 00000023.meta
+    2: Unable to open static sorted file 00000019.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000019.sst
+    4: The system cannot find the path specified. (os error 3)
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to C:\Users\AKRN\AppData\Local\Temp\next-panic-79e13007a739ed175a6ce319da215edf.log.
+
+To help make Turbopack better, report this error by clicking here: https://bugs.nextjs.org/search?category=turbopack-error-report&title=Turbopack%20Error%3A%20Failed%20to%20restore%20task%20data%20%28corrupted%20database%20or%20bug%29%3A%20Meta%20for%20TaskId%20103646%29&body=Turbopack%20version%3A%20%60v16.2.10%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0AFailed%20to%20restore%20task%20data%20%28corrupted%20database%20or%20bug%29%3A%20Meta%20for%20TaskId%20103646%29%0A%0ADebug%20info%3A%0A-%20Execution%20of%20get_written_endpoint_with_issues_operation%20failed%0A-%20Execution%20of%20endpoint_write_to_disk%20failed%0A-%20Execution%20of%20%3CPageEndpoint%20as%20Endpoint%3E%3A%3Aoutput%20failed%0A-%20Failed%20to%20restore%20task%20data%20%28corrupted%20database%20or%20bug%29%3A%20Meta%20for%20TaskId%20103646%29%0A%20%20%0A%20%20Caused%20by%3A%0A%20%20%20%20%20%200%3A%20Looking%20up%20task%20storage%20for%20TaskId%20103646%20from%20database%20failed%0A%20%20%20%20%20%201%3A%20Unable%20to%20open%20static%20sorted%20file%20referenced%20from%2000000023.meta%0A%20%20%20%20%20%202%3A%20Unable%20to%20open%20static%20sorted%20file%2000000019.sst%0A%20%20%20%20%20%203%3A%20Failed%20to%20open%20SST%20file%20E%3A%5CClaudeProject%5C9_Gacha%5C.next%5Cdev%5Ccache%2Fturbopack%5Cv16.2.10%5C00000019.sst%0A%20%20%20%20%20%204%3A%20The%20system%20cannot%20find%20the%20path%20specified.%20%28os%20error%203%29%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+⨯ Error [TurbopackInternalError]: Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)
+
+Debug info:
+- Execution of get_written_endpoint_with_issues_operation failed
+- Execution of endpoint_write_to_disk failed
+- Execution of <PageEndpoint as Endpoint>::output failed
+- Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)
+  
+  Caused by:
+      0: Looking up task storage for TaskId 103646 from database failed
+      1: Unable to open static sorted file referenced from 00000023.meta
+      2: Unable to open static sorted file 00000019.sst
+      3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000019.sst
+      4: The system cannot find the path specified. (os error 3)
+    at <unknown> (TurbopackInternalError: Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)) {
+  location: 'turbopack\\crates\\turbo-tasks-backend\\src\\backend\\operation\\mod.rs:197:17'
+}
+
+thread '<unnamed>' (8420) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 103630)
+
+Caused by:
+    0: Looking up task storage for TaskId 103630 from database failed
+    1: Unable to open static sorted file referenced from 00000322.meta
+    2: Unable to open static sorted file 00000318.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000318.sst
+    4: The system cannot find the path specified. (os error 3)
+Error: ENOENT: no such file or directory, open 'E:\ClaudeProject\9_Gacha\.next\dev\server\app\page\build-manifest.json'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'E:\\ClaudeProject\\9_Gacha\\.next\\dev\\server\\app\\page\\build-manifest.json'
+}
+⨯ Error [TurbopackInternalError]: Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)
+
+Debug info:
+- Execution of get_written_endpoint_with_issues_operation failed
+- Execution of endpoint_write_to_disk failed
+- Execution of <PageEndpoint as Endpoint>::output failed
+- Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)
+  
+  Caused by:
+      0: Looking up task storage for TaskId 103646 from database failed
+      1: Unable to open static sorted file referenced from 00000023.meta
+      2: Unable to open static sorted file 00000019.sst
+      3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000019.sst
+      4: The system cannot find the path specified. (os error 3)
+    at <unknown> (TurbopackInternalError: Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)) {
+  location: 'turbopack\\crates\\turbo-tasks-backend\\src\\backend\\operation\\mod.rs:197:17'
+}
+Error [TurbopackInternalError]: Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)
+
+Debug info:
+- Execution of get_written_endpoint_with_issues_operation failed
+- Execution of endpoint_write_to_disk failed
+- Execution of <PageEndpoint as Endpoint>::output failed
+- Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)
+  
+  Caused by:
+      0: Looking up task storage for TaskId 103646 from database failed
+      1: Unable to open static sorted file referenced from 00000023.meta
+      2: Unable to open static sorted file 00000019.sst
+      3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000019.sst
+      4: The system cannot find the path specified. (os error 3)
+    at <unknown> (TurbopackInternalError: Failed to restore task data (corrupted database or bug): Meta for TaskId 103646)) {
+  location: 'turbopack\\crates\\turbo-tasks-backend\\src\\backend\\operation\\mod.rs:197:17'
+}
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (27180) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:619:14:
+Failed to lookup task ids: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "read_dir", global_name: "turbo_tasks_fs::read_dir", .. }, this: None, arg: (FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(9, "turbo_tasks_fs::DiskFileSystem#0")), path: ".claude" },) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000025.meta
+    1: Unable to open static sorted file 00000021.sst
+    2: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000021.sst
+    3: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (16796) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:619:14:
+Failed to lookup task ids: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "track_glob", global_name: "turbo_tasks_fs::read_glob::track_glob", .. }, this: None, arg: (FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(9, "turbo_tasks_fs::DiskFileSystem#0")), path: ".github" }, Vc(RawVc::TaskCell(103652, "turbo_tasks_fs::glob::Glob#0")), false) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000375.meta
+    1: Unable to open static sorted file 00000373.sst
+    2: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000373.sst
+    3: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (14756) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:619:14:
+Failed to lookup task ids: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "read_dir", global_name: "turbo_tasks_fs::read_dir", .. }, this: None, arg: (FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(9, "turbo_tasks_fs::DiskFileSystem#0")), path: "tmp" },) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000025.meta
+    1: Unable to open static sorted file 00000021.sst
+    2: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000021.sst
+    3: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (14756) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 47475)
+
+Caused by:
+    0: Looking up task storage for TaskId 47475 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (24284) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 47475)
+
+Caused by:
+    0: Looking up task storage for TaskId 47475 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (14756) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 47475)
+
+Caused by:
+    0: Looking up task storage for TaskId 47475 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (30508) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:225:17:
+Failed to restore task data (corrupted database or bug): Data for batch of 3 tasks
+
+Caused by:
+    0: Looking up typed data for 3 tasks from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000017.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000017.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (28348) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 42233)
+
+Caused by:
+    0: Looking up task storage for TaskId 42233 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000015.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000015.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (29452) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 80)
+
+Caused by:
+    0: Looking up task storage for TaskId 80 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (30508) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 42233)
+
+Caused by:
+    0: Looking up task storage for TaskId 42233 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000015.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000015.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (28348) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 42233)
+
+Caused by:
+    0: Looking up task storage for TaskId 42233 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000015.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000015.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (27180) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 47478)
+
+Caused by:
+    0: Looking up task storage for TaskId 47478 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000017.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000017.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (28348) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 409)
+
+Caused by:
+    0: Looking up task storage for TaskId 409 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (29452) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 47478)
+
+Caused by:
+    0: Looking up task storage for TaskId 47478 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000017.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000017.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (24284) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:225:17:
+Failed to restore task data (corrupted database or bug): Data for batch of 2 tasks
+
+Caused by:
+    0: Looking up typed data for 2 tasks from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (27180) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:225:17:
+Failed to restore task data (corrupted database or bug): Data for batch of 7 tasks
+
+Caused by:
+    0: Looking up typed data for 7 tasks from database failed
+    1: Unable to open static sorted file referenced from 00000335.meta
+    2: Unable to open static sorted file 00000330.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000330.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (28348) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:225:17:
+Failed to restore task data (corrupted database or bug): Data for batch of 6 tasks
+
+Caused by:
+    0: Looking up typed data for 6 tasks from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000017.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000017.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (15596) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:225:17:
+Failed to restore task data (corrupted database or bug): Data for batch of 6 tasks
+
+Caused by:
+    0: Looking up typed data for 6 tasks from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000017.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000017.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (29452) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:197:17:
+Failed to restore task data (corrupted database or bug): Data for TaskId 47478)
+
+Caused by:
+    0: Looking up task storage for TaskId 47478 from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000017.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000017.sst
+    4: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-runtime-worker' (24284) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:225:17:
+Failed to restore task data (corrupted database or bug): Data for batch of 2 tasks
+
+Caused by:
+    0: Looking up typed data for 2 tasks from database failed
+    1: Unable to open static sorted file referenced from 00000024.meta
+    2: Unable to open static sorted file 00000018.sst
+    3: Failed to open SST file E:\ClaudeProject\9_Gacha\.next\dev\cache/turbopack\v16.2.10\00000018.sst
+    4: The system cannot find the path specified. (os error 3)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

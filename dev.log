@@ -1,0 +1,4 @@
+> Ready on http://localhost:3000
+ GET /room/JKA9H 200 in 761ms (next.js: 599ms, application-code: 162ms)
+ GET / 200 in 48ms (next.js: 25ms, application-code: 24ms)
+ GET /room/CRVJ6 200 in 32ms (next.js: 11ms, application-code: 21ms)

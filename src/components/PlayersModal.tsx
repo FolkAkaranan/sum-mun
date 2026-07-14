@@ -9,6 +9,7 @@ export default function PlayersModal({
   onAdd,
   onRemove,
   onClearAll,
+  onShuffle,
   onExport,
   onImport,
   onClose,
@@ -17,6 +18,7 @@ export default function PlayersModal({
   onAdd: (text: string) => void;
   onRemove: (index: number) => void;
   onClearAll: () => void;
+  onShuffle: () => void;
   onExport: () => void;
   onImport: (data: unknown) => void;
   onClose: () => void;
@@ -73,7 +75,10 @@ export default function PlayersModal({
       </form>
 
       {players.names.length > 0 && (
-        <div className="mb-4 flex justify-end">
+        <div className="mb-4 flex justify-end gap-4">
+          <button onClick={onShuffle} className="text-sm text-indigo-500 hover:underline">
+            🔀 สลับลำดับ
+          </button>
           <button
             onClick={() => {
               if (confirm("ลบผู้เล่นทั้งหมด?")) onClearAll();

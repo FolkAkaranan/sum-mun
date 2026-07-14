@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { PlayerState, WheelState } from "@/lib/types";
 import { previewTurn } from "@/lib/gameLogic";
+import { playDrawSound, playRevealSound } from "@/lib/sound";
 import Modal from "@/components/Modal";
 
 const COLORS = [
@@ -64,6 +65,7 @@ export default function WheelSpin({
 
   function handleSpin() {
     if (!canSpin) return;
+    playDrawSound();
     setRevealed(false);
     setSpinning(true);
     onDraw();
@@ -81,6 +83,7 @@ export default function WheelSpin({
     if (!spinning) return;
     setSpinning(false);
     setRevealed(true);
+    playRevealSound();
   }
 
   const seg = items.length > 0 ? 360 / items.length : 0;

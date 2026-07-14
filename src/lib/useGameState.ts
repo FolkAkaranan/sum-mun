@@ -116,6 +116,7 @@ export function useGameState() {
     playersAdd: (text: string) => setState((s) => (s ? game.playersAdd(s, text) : s)),
     playersRemove: (index: number) => setState((s) => (s ? game.playersRemove(s, index) : s)),
     playersClearAll: () => setState((s) => (s ? game.playersClearAll(s) : s)),
+    playersShuffle: () => setState((s) => (s ? game.playersShuffle(s) : s)),
     exportPresets: () => (state ? game.exportPresets(state) : null),
     importPresets: (data: unknown) => setState((s) => (s ? game.importPresets(s, data) : s)),
   };

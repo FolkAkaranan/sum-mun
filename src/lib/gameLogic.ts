@@ -904,6 +904,16 @@ export function playersClearAll(room: RoomState): RoomState {
   return { ...room, players: { names: [], turnIndex: 0 } };
 }
 
+/** สลับลำดับผู้เล่นแบบสุ่ม (Fisher-Yates) แล้วรีเซ็ตคิวกลับไปเริ่มที่คนแรก */
+export function playersShuffle(room: RoomState): RoomState {
+  const names = [...room.players.names];
+  for (let i = names.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [names[i], names[j]] = [names[j], names[i]];
+  }
+  return { ...room, players: { names, turnIndex: 0 } };
+}
+
 // ----- export / import presets -----
 export interface ExportedPresets {
   version: 1;

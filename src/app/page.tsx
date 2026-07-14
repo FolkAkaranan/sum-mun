@@ -219,6 +219,7 @@ export default function Home() {
           onAdd={game.playersAdd}
           onRemove={game.playersRemove}
           onClearAll={game.playersClearAll}
+          onShuffle={game.playersShuffle}
           onExport={handleExport}
           onImport={game.importPresets}
           onClose={() => setPlayersOpen(false)}

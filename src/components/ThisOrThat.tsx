@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PlayerState, ThisOrThatState } from "@/lib/types";
 import { previewTurn } from "@/lib/gameLogic";
+import { playRevealSound } from "@/lib/sound";
 import Modal from "@/components/Modal";
 
 export default function ThisOrThat({
@@ -39,7 +40,10 @@ export default function ThisOrThat({
     <div className="flex flex-1 flex-col items-center justify-between gap-6 py-4">
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <button
-          onClick={onDraw}
+          onClick={() => {
+            playRevealSound();
+            onDraw();
+          }}
           disabled={state.items.length === 0}
           className="flex h-56 w-56 items-center justify-center rounded-full bg-fuchsia-50 text-[8rem] leading-none transition active:scale-95 disabled:opacity-30 dark:bg-fuchsia-950/30"
           aria-label="สุ่ม This or That"
@@ -97,7 +101,10 @@ export default function ThisOrThat({
                 ปิด
               </button>
               <button
-                onClick={onDraw}
+                onClick={() => {
+                  playRevealSound();
+                  onDraw();
+                }}
                 className="flex-1 rounded-xl bg-fuchsia-600 py-2.5 font-medium text-white hover:bg-fuchsia-700"
               >
                 สุ่มใหม่

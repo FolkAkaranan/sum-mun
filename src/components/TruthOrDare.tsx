@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TD_CATEGORY_LABEL } from "@/lib/types";
 import type { PlayerState, TdCategory, TdState, TdType } from "@/lib/types";
 import { previewTurn } from "@/lib/gameLogic";
+import { playRevealSound } from "@/lib/sound";
 import Modal from "@/components/Modal";
 
 const TYPE_LABEL: Record<TdType, string> = { truth: "Truth", dare: "Dare" };
@@ -65,7 +66,10 @@ export default function TruthOrDare({
       <div className="flex flex-1 flex-col items-center justify-center gap-6">
         <div className="flex gap-6">
           <button
-            onClick={() => onDraw("truth")}
+            onClick={() => {
+              playRevealSound();
+              onDraw("truth");
+            }}
             disabled={bucket.truth.length === 0}
             className="flex flex-col items-center gap-2 disabled:opacity-30"
           >
@@ -75,7 +79,10 @@ export default function TruthOrDare({
             <span className="text-lg font-bold text-sky-600">Truth</span>
           </button>
           <button
-            onClick={() => onDraw("dare")}
+            onClick={() => {
+              playRevealSound();
+              onDraw("dare");
+            }}
             disabled={bucket.dare.length === 0}
             className="flex flex-col items-center gap-2 disabled:opacity-30"
           >
@@ -126,7 +133,10 @@ export default function TruthOrDare({
                 ปิด
               </button>
               <button
-                onClick={() => onDraw(state.lastDrawn!.type)}
+                onClick={() => {
+                  playRevealSound();
+                  onDraw(state.lastDrawn!.type);
+                }}
                 className="flex-1 rounded-xl bg-rose-600 py-2.5 font-medium text-white hover:bg-rose-700"
               >
                 สุ่มใหม่

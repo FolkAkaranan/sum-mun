@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PlayerState, TopicState } from "@/lib/types";
 import { previewTurn } from "@/lib/gameLogic";
+import { playRevealSound } from "@/lib/sound";
 import Modal from "@/components/Modal";
 
 export default function TopicMode({
@@ -72,7 +73,10 @@ export default function TopicMode({
 
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <button
-          onClick={onDraw}
+          onClick={() => {
+            playRevealSound();
+            onDraw();
+          }}
           disabled={activeList.length === 0}
           className="flex h-56 w-56 items-center justify-center rounded-full bg-indigo-50 text-[8rem] leading-none transition active:scale-95 disabled:opacity-30 dark:bg-indigo-950/30"
           aria-label="สุ่มหัวข้อคุย"
@@ -122,7 +126,10 @@ export default function TopicMode({
                 ปิด
               </button>
               <button
-                onClick={onDraw}
+                onClick={() => {
+                  playRevealSound();
+                  onDraw();
+                }}
                 className="flex-1 rounded-xl bg-indigo-600 py-2.5 font-medium text-white hover:bg-indigo-700"
               >
                 สุ่มใหม่

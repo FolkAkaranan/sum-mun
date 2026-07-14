@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { PlayerState, CharadeState } from "@/lib/types";
 import { previewTurn } from "@/lib/gameLogic";
+import { playTickSound, playBuzzerSound, playCorrectSound, playSkipSound } from "@/lib/sound";
 import Modal from "@/components/Modal";
 
 const DURATIONS = [30, 60, 90];
@@ -83,6 +84,7 @@ export default function Charades({
       setPhase("playing");
       return;
     }
+    playTickSound();
     const t = setTimeout(() => setCountdown((c) => c - 1), 700);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,9 +93,11 @@ export default function Charades({
   useEffect(() => {
     if (phase !== "playing") return;
     if (timeLeft <= 0) {
+      playBuzzerSound();
       setPhase("result");
       return;
     }
+    if (timeLeft <= 3) playTickSound();
     const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,6 +105,8 @@ export default function Charades({
 
   function mark(correct: boolean) {
     if (!state.lastDrawn) return;
+    if (correct) playCorrectSound();
+    else playSkipSound();
     setResults((r) => [...r, { text: state.lastDrawn!.text, correct }]);
     onDraw();
   }

@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "สแกน PromptPay เพื่อเลี้ยงกาแฟ สนับสนุนการพัฒนาเว็บสุ่มมันส์",
 };
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export default function DonatePage() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-6 md:max-w-lg md:py-10">
@@ -27,7 +29,7 @@ export default function DonatePage() {
         </p>
         <div className="w-full max-w-xs overflow-hidden rounded-2xl border border-neutral-200 shadow-lg dark:border-neutral-800">
           <Image
-            src="/donate-qr.jpg"
+            src={`${basePath}/donate-qr.jpg`}
             alt="PromptPay QR สำหรับ Donate"
             width={885}
             height={1200}

@@ -16,7 +16,7 @@ export function useGameState() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        setState(JSON.parse(raw) as RoomState);
+        setState(game.ensureRoomState(JSON.parse(raw)));
         return;
       }
     } catch {
@@ -66,6 +66,24 @@ export function useGameState() {
       setState((s) => (s ? game.tdRestorePreset(s, category, type) : s)),
     tdDraw: (type: TdType) => setState((s) => (s ? game.tdDraw(s, type) : s)),
     tdClear: () => setState((s) => (s ? game.tdClear(s) : s)),
+    neverAdd: (text: string) => setState((s) => (s ? game.neverAdd(s, text) : s)),
+    neverRemove: (id: string) => setState((s) => (s ? game.neverRemove(s, id) : s)),
+    neverClearAll: () => setState((s) => (s ? game.neverClearAll(s) : s)),
+    neverRestorePreset: () => setState((s) => (s ? game.neverRestorePreset(s) : s)),
+    neverDraw: () => setState((s) => (s ? game.neverDraw(s) : s)),
+    neverClear: () => setState((s) => (s ? game.neverClear(s) : s)),
+    thisOrThatAdd: (text: string) => setState((s) => (s ? game.thisOrThatAdd(s, text) : s)),
+    thisOrThatRemove: (id: string) => setState((s) => (s ? game.thisOrThatRemove(s, id) : s)),
+    thisOrThatClearAll: () => setState((s) => (s ? game.thisOrThatClearAll(s) : s)),
+    thisOrThatRestorePreset: () =>
+      setState((s) => (s ? game.thisOrThatRestorePreset(s) : s)),
+    thisOrThatDraw: () => setState((s) => (s ? game.thisOrThatDraw(s) : s)),
+    thisOrThatClear: () => setState((s) => (s ? game.thisOrThatClear(s) : s)),
+    playersAdd: (text: string) => setState((s) => (s ? game.playersAdd(s, text) : s)),
+    playersRemove: (index: number) => setState((s) => (s ? game.playersRemove(s, index) : s)),
+    playersClearAll: () => setState((s) => (s ? game.playersClearAll(s) : s)),
+    exportPresets: () => (state ? game.exportPresets(state) : null),
+    importPresets: (data: unknown) => setState((s) => (s ? game.importPresets(s, data) : s)),
   };
 }
 

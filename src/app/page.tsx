@@ -6,19 +6,39 @@ import ModeCard from "@/components/ModeCard";
 import LotteryBox from "@/components/LotteryBox";
 import TopicMode from "@/components/TopicMode";
 import TruthOrDare from "@/components/TruthOrDare";
+import NeverHaveIEver from "@/components/NeverHaveIEver";
+import ThisOrThat from "@/components/ThisOrThat";
+import PlayersModal from "@/components/PlayersModal";
 import { useGameState } from "@/lib/useGameState";
+import { useTheme } from "@/lib/useTheme";
 
 const MODES: { key: AppMode; label: string; emoji: string }[] = [
   { key: "lottery", label: "จับฉลาก", emoji: "🎁" },
   { key: "topic", label: "คุยอะไรดี", emoji: "💬" },
   { key: "td", label: "Truth or Dare", emoji: "🔥" },
+  { key: "never", label: "Never Have I Ever", emoji: "🙊" },
+  { key: "thisOrThat", label: "This or That", emoji: "🤔" },
 ];
 
 export default function Home() {
   const [mode, setMode] = useState<AppMode | null>(null);
+  const [playersOpen, setPlayersOpen] = useState(false);
   const game = useGameState();
+  const { theme, toggleTheme } = useTheme();
 
   const activeMode = MODES.find((m) => m.key === mode);
+
+  function handleExport() {
+    const data = game.exportPresets();
+    if (!data) return;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "sum-mun-presets.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-6 md:max-w-2xl md:py-10">
@@ -33,15 +53,29 @@ export default function Home() {
           </button>
         ) : null}
         {activeMode ? (
-          <h1 className="text-xl font-bold">{activeMode.label}</h1>
+          <h1 className="flex-1 text-xl font-bold">{activeMode.label}</h1>
         ) : (
-          <div className="text-center">
+          <div className="flex-1 text-center">
             <h1 className="text-2xl font-bold tracking-tight">🎉 สุ่มมันส์</h1>
             <p className="mt-1 text-sm text-neutral-500">
-              จับฉลาก · คุยอะไรดี · Truth or Dare
+              จับฉลาก · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That
             </p>
           </div>
         )}
+        <button
+          onClick={() => setPlayersOpen(true)}
+          className="rounded-full p-2 text-xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
+          aria-label="ผู้เล่นและตั้งค่าข้อมูล"
+        >
+          👥
+        </button>
+        <button
+          onClick={toggleTheme}
+          className="rounded-full p-2 text-xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
+          aria-label="สลับโหมดมืด/สว่าง"
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
       </header>
 
       {!game.state ? (
@@ -93,7 +127,41 @@ export default function Home() {
               onRestorePreset={game.tdRestorePreset}
             />
           )}
+          {mode === "never" && (
+            <NeverHaveIEver
+              state={game.state.never}
+              onDraw={game.neverDraw}
+              onClear={game.neverClear}
+              onAdd={game.neverAdd}
+              onRemove={game.neverRemove}
+              onClearAll={game.neverClearAll}
+              onRestorePreset={game.neverRestorePreset}
+            />
+          )}
+          {mode === "thisOrThat" && (
+            <ThisOrThat
+              state={game.state.thisOrThat}
+              onDraw={game.thisOrThatDraw}
+              onClear={game.thisOrThatClear}
+              onAdd={game.thisOrThatAdd}
+              onRemove={game.thisOrThatRemove}
+              onClearAll={game.thisOrThatClearAll}
+              onRestorePreset={game.thisOrThatRestorePreset}
+            />
+          )}
         </>
+      )}
+
+      {playersOpen && game.state && (
+        <PlayersModal
+          players={game.state.players}
+          onAdd={game.playersAdd}
+          onRemove={game.playersRemove}
+          onClearAll={game.playersClearAll}
+          onExport={handleExport}
+          onImport={game.importPresets}
+          onClose={() => setPlayersOpen(false)}
+        />
       )}
     </main>
   );

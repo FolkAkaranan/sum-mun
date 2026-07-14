@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { LotteryState } from "@/lib/types";
 import Modal from "@/components/Modal";
+import { playDrawSound, playRevealSound } from "@/lib/sound";
 
 export default function LotteryBox({
   state,
@@ -21,6 +22,7 @@ export default function LotteryBox({
 }) {
   const [text, setText] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
 
   function addItem(e: React.FormEvent) {
     e.preventDefault();
@@ -29,13 +31,26 @@ export default function LotteryBox({
     setText("");
   }
 
+  function handleDraw() {
+    if (state.items.length === 0 || isShaking) return;
+    setIsShaking(true);
+    playDrawSound();
+    setTimeout(() => {
+      onDraw();
+      playRevealSound();
+      setIsShaking(false);
+    }, 400);
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center justify-between gap-8 py-4">
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <button
-          onClick={onDraw}
-          disabled={state.items.length === 0}
-          className="flex h-56 w-56 items-center justify-center rounded-full bg-amber-50 text-[8rem] leading-none transition active:scale-95 disabled:opacity-30 dark:bg-amber-950/30"
+          onClick={handleDraw}
+          disabled={state.items.length === 0 || isShaking}
+          className={`flex h-56 w-56 items-center justify-center rounded-full bg-amber-50 text-[8rem] leading-none transition active:scale-95 disabled:opacity-30 dark:bg-amber-950/30 ${
+            isShaking ? "animate-shake" : ""
+          }`}
           aria-label="จับฉลาก"
         >
           🎁

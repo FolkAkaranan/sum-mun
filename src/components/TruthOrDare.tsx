@@ -42,12 +42,12 @@ export default function TruthOrDare({
 
   return (
     <div className="flex flex-1 flex-col items-center justify-between gap-6 py-4">
-      <div className="flex w-full gap-2">
+      <div className="flex w-full flex-wrap justify-center gap-2">
         {(Object.keys(TD_CATEGORY_LABEL) as TdCategory[]).map((cat) => (
           <button
             key={cat}
             onClick={() => onSetCategory(cat)}
-            className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+            className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
               cat === activeCategory
                 ? "bg-rose-600 text-white"
                 : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
@@ -98,6 +98,11 @@ export default function TruthOrDare({
               {TYPE_LABEL[state.lastDrawn.type]}
             </p>
             <p className="text-xl font-bold">{state.lastDrawn.item.text}</p>
+            {state.lastPlayer && (
+              <p className="text-sm text-neutral-500">
+                👤 ผู้เล่นที่ตอบ: <span className="font-semibold">{state.lastPlayer}</span>
+              </p>
+            )}
             <div className="flex w-full gap-3">
               <button
                 onClick={onClear}

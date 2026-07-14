@@ -68,6 +68,13 @@ export interface CharadeState {
   nextPlayer: string | null;
 }
 
+export interface WheelState {
+  items: ListItem[];
+  lastDrawn: ListItem | null;
+  lastPlayer: string | null;
+  nextPlayer: string | null;
+}
+
 export interface PlayerState {
   names: string[];
   turnIndex: number;
@@ -81,6 +88,7 @@ export interface RoomState {
   thisOrThat: ThisOrThatState;
   mostLikely: MostLikelyState;
   charade: CharadeState;
+  wheel: WheelState;
   players: PlayerState;
 }
 
@@ -99,4 +107,5 @@ export type AppMode =
   | "never"
   | "thisOrThat"
   | "mostLikely"
-  | "charade";
+  | "charade"
+  | "wheel";

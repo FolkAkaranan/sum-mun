@@ -15,6 +15,8 @@ export default function TopicMode({
   onRemove,
   onClearAll,
   onRestorePreset,
+  onAddCategory,
+  onRemoveCategory,
 }: {
   state: TopicState;
   players: PlayerState;
@@ -25,8 +27,11 @@ export default function TopicMode({
   onRemove: (category: string, id: string) => void;
   onClearAll: (category: string) => void;
   onRestorePreset: (category: string) => void;
+  onAddCategory: (category: string) => void;
+  onRemoveCategory: (category: string) => void;
 }) {
   const [text, setText] = useState("");
+  const [newCategory, setNewCategory] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const categories = Object.keys(state.categories);
@@ -38,6 +43,13 @@ export default function TopicMode({
     if (!text.trim()) return;
     onAdd(state.activeCategory, text.trim());
     setText("");
+  }
+
+  function addCategory(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newCategory.trim()) return;
+    onAddCategory(newCategory.trim());
+    setNewCategory("");
   }
 
   return (
@@ -122,6 +134,49 @@ export default function TopicMode({
 
       {settingsOpen && (
         <Modal title={`จัดการหัวข้อ · ${state.activeCategory}`} onClose={() => setSettingsOpen(false)}>
+          <div className="mb-4">
+            <p className="mb-2 text-sm font-medium text-neutral-500">หมวดหมู่</p>
+            <div className="mb-2 flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <span
+                  key={cat}
+                  className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm ${
+                    cat === state.activeCategory
+                      ? "bg-indigo-600 text-white"
+                      : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+                  }`}
+                >
+                  <button onClick={() => onSetCategory(cat)}>{cat}</button>
+                  {categories.length > 1 && (
+                    <button
+                      onClick={() => {
+                        if (confirm(`ลบหมวด "${cat}" ทั้งหมวด? (คำถามในหมวดนี้จะหายไปด้วย)`)) onRemoveCategory(cat);
+                      }}
+                      aria-label={`ลบหมวด ${cat}`}
+                      className="opacity-70 hover:opacity-100"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </span>
+              ))}
+            </div>
+            <form onSubmit={addCategory} className="flex gap-2">
+              <input
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="เพิ่มหมวดหมู่ใหม่..."
+                className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+              />
+              <button
+                type="submit"
+                className="rounded-xl bg-neutral-900 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
+              >
+                เพิ่ม
+              </button>
+            </form>
+          </div>
+          <hr className="mb-4 border-neutral-200 dark:border-neutral-800" />
           <form onSubmit={addItem} className="mb-2 flex gap-2">
             <input
               value={text}

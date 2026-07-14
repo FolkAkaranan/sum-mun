@@ -12,6 +12,7 @@ import type {
   ThisOrThatState,
   TdType,
   TopicState,
+  WheelState,
 } from "@/lib/types";
 
 const TD_CATEGORIES: TdCategory[] = ["friend", "lover", "party", "family", "coworker"];
@@ -171,6 +172,7 @@ export function createInitialState(): RoomState {
       lastPlayer: null,
       nextPlayer: null,
     },
+    wheel: { items: [], lastDrawn: null, lastPlayer: null, nextPlayer: null },
     players: { names: [], turnIndex: 0 },
   };
 }
@@ -244,6 +246,15 @@ export function ensureRoomState(state: unknown): RoomState {
       }
     : fresh.charade;
 
+  const wheel: WheelState = s.wheel
+    ? {
+        items: s.wheel.items ?? fresh.wheel.items,
+        lastDrawn: s.wheel.lastDrawn ?? null,
+        lastPlayer: s.wheel.lastPlayer ?? null,
+        nextPlayer: s.wheel.nextPlayer ?? null,
+      }
+    : fresh.wheel;
+
   const players: PlayerState = s.players
     ? { names: s.players.names ?? [], turnIndex: s.players.turnIndex ?? 0 }
     : fresh.players;
@@ -256,6 +267,7 @@ export function ensureRoomState(state: unknown): RoomState {
     thisOrThat,
     mostLikely,
     charade,
+    wheel,
     players,
   };
 }
@@ -767,6 +779,112 @@ export function charadeAssignHolder(room: RoomState): RoomState {
   };
 }
 
+/** เพิ่มหมวดใหม่ (ว่างเปล่า) ถ้ามีอยู่แล้วจะไม่ทำอะไร */
+export function topicAddCategory(room: RoomState, category: string): RoomState {
+  const name = category.trim();
+  if (!name || room.topic.categories[name]) return room;
+  return {
+    ...room,
+    topic: {
+      ...room.topic,
+      categories: { ...room.topic.categories, [name]: [] },
+      usedIds: { ...room.topic.usedIds, [name]: [] },
+    },
+  };
+}
+
+/** ลบหมวด ห้ามลบถ้าเหลือหมวดเดียว จะสลับ activeCategory ไปหมวดแรกที่เหลือถ้าลบหมวดที่กำลังเลือกอยู่ */
+export function topicRemoveCategory(room: RoomState, category: string): RoomState {
+  const keys = Object.keys(room.topic.categories);
+  if (keys.length <= 1 || !room.topic.categories[category]) return room;
+  const categories = { ...room.topic.categories };
+  const usedIds = { ...room.topic.usedIds };
+  delete categories[category];
+  delete usedIds[category];
+  const activeCategory =
+    room.topic.activeCategory === category ? Object.keys(categories)[0] : room.topic.activeCategory;
+  return {
+    ...room,
+    topic: { ...room.topic, categories, usedIds, activeCategory },
+  };
+}
+
+/** เพิ่มหมวดใหม่ (ว่างเปล่า) ถ้ามีอยู่แล้วจะไม่ทำอะไร */
+export function charadeAddCategory(room: RoomState, category: string): RoomState {
+  const name = category.trim();
+  if (!name || room.charade.categories[name]) return room;
+  return {
+    ...room,
+    charade: {
+      ...room.charade,
+      categories: { ...room.charade.categories, [name]: [] },
+      usedIds: { ...room.charade.usedIds, [name]: [] },
+    },
+  };
+}
+
+/** ลบหมวด ห้ามลบถ้าเหลือหมวดเดียว จะสลับ activeCategory ไปหมวดแรกที่เหลือถ้าลบหมวดที่กำลังเลือกอยู่ */
+export function charadeRemoveCategory(room: RoomState, category: string): RoomState {
+  const keys = Object.keys(room.charade.categories);
+  if (keys.length <= 1 || !room.charade.categories[category]) return room;
+  const categories = { ...room.charade.categories };
+  const usedIds = { ...room.charade.usedIds };
+  delete categories[category];
+  delete usedIds[category];
+  const activeCategory =
+    room.charade.activeCategory === category
+      ? Object.keys(categories)[0]
+      : room.charade.activeCategory;
+  return {
+    ...room,
+    charade: { ...room.charade, categories, usedIds, activeCategory },
+  };
+}
+
+// ----- wheel (วงล้อสุ่ม) -----
+export function wheelAdd(room: RoomState, text: string): RoomState {
+  const texts = parseBulk(text);
+  if (texts.length === 0) return room;
+  return { ...room, wheel: { ...room.wheel, items: [...room.wheel.items, ...withIds(texts)] } };
+}
+
+export function wheelRemove(room: RoomState, id: string): RoomState {
+  return { ...room, wheel: { ...room.wheel, items: room.wheel.items.filter((i) => i.id !== id) } };
+}
+
+export function wheelClearAll(room: RoomState): RoomState {
+  return { ...room, wheel: { ...room.wheel, items: [] } };
+}
+
+/** สุ่มแบบไม่ตัดออก (วงล้อจริงหมุนซ้ำอันเดิมได้) และเลื่อนคิวผู้เล่นเหมือนโหมดอื่น */
+export function wheelDraw(room: RoomState): RoomState {
+  const drawn = pickRandom(room.wheel.items);
+  if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
+  return {
+    ...room,
+    players,
+    wheel: { ...room.wheel, lastDrawn: drawn, lastPlayer: current, nextPlayer: next },
+  };
+}
+
+export function wheelClear(room: RoomState): RoomState {
+  return { ...room, wheel: { ...room.wheel, lastDrawn: null, lastPlayer: null, nextPlayer: null } };
+}
+
+/** เก็บ = คงตัวเลือกไว้ในวงล้อ, ทิ้ง = ลบตัวเลือกที่สุ่มได้ออกจากวงล้อถาวร */
+export function wheelResolve(room: RoomState, action: "keep" | "discard"): RoomState {
+  if (!room.wheel.lastDrawn) return room;
+  const items =
+    action === "discard"
+      ? room.wheel.items.filter((i) => i.id !== room.wheel.lastDrawn!.id)
+      : room.wheel.items;
+  return {
+    ...room,
+    wheel: { ...room.wheel, items, lastDrawn: null, lastPlayer: null, nextPlayer: null },
+  };
+}
+
 // ----- players -----
 // เพิ่ม/ลบ/ล้างรายชื่อผู้เล่น จะรีเซ็ตคิวกลับไปเริ่มที่คนแรกเสมอ กันคิวเพี้ยนตอนรายชื่อเปลี่ยน
 export function playersAdd(room: RoomState, text: string): RoomState {
@@ -796,6 +914,7 @@ export interface ExportedPresets {
   thisOrThat: PairItem[];
   mostLikely: ListItem[];
   charade: Record<string, ListItem[]>;
+  wheel: ListItem[];
 }
 
 export function exportPresets(room: RoomState): ExportedPresets {
@@ -808,6 +927,7 @@ export function exportPresets(room: RoomState): ExportedPresets {
     thisOrThat: room.thisOrThat.items,
     mostLikely: room.mostLikely.items,
     charade: room.charade.categories,
+    wheel: room.wheel.items,
   };
 }
 
@@ -873,6 +993,12 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
       activeCategory: Object.keys(charadeCategories)[0] ?? fresh.charade.activeCategory,
       categories: charadeCategories,
       usedIds: charadeUsedIds,
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
+    wheel: {
+      items: d.wheel ?? room.wheel.items,
       lastDrawn: null,
       lastPlayer: null,
       nextPlayer: null,

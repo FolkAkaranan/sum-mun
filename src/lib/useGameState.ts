@@ -52,6 +52,10 @@ export function useGameState() {
       setState((s) => (s ? game.topicClearAll(s, category) : s)),
     topicRestorePreset: (category: string) =>
       setState((s) => (s ? game.topicRestorePreset(s, category) : s)),
+    topicAddCategory: (category: string) =>
+      setState((s) => (s ? game.topicAddCategory(s, category) : s)),
+    topicRemoveCategory: (category: string) =>
+      setState((s) => (s ? game.topicRemoveCategory(s, category) : s)),
     topicDraw: () => setState((s) => (s ? game.topicDraw(s) : s)),
     topicClear: () => setState((s) => (s ? game.topicClear(s) : s)),
     tdSetCategory: (category: TdCategory) =>
@@ -96,8 +100,19 @@ export function useGameState() {
       setState((s) => (s ? game.charadeClearAll(s, category) : s)),
     charadeRestorePreset: (category: string) =>
       setState((s) => (s ? game.charadeRestorePreset(s, category) : s)),
+    charadeAddCategory: (category: string) =>
+      setState((s) => (s ? game.charadeAddCategory(s, category) : s)),
+    charadeRemoveCategory: (category: string) =>
+      setState((s) => (s ? game.charadeRemoveCategory(s, category) : s)),
     charadeDraw: () => setState((s) => (s ? game.charadeDraw(s) : s)),
     charadeAssignHolder: () => setState((s) => (s ? game.charadeAssignHolder(s) : s)),
+    wheelAdd: (text: string) => setState((s) => (s ? game.wheelAdd(s, text) : s)),
+    wheelRemove: (id: string) => setState((s) => (s ? game.wheelRemove(s, id) : s)),
+    wheelClearAll: () => setState((s) => (s ? game.wheelClearAll(s) : s)),
+    wheelDraw: () => setState((s) => (s ? game.wheelDraw(s) : s)),
+    wheelClear: () => setState((s) => (s ? game.wheelClear(s) : s)),
+    wheelResolve: (action: "keep" | "discard") =>
+      setState((s) => (s ? game.wheelResolve(s, action) : s)),
     playersAdd: (text: string) => setState((s) => (s ? game.playersAdd(s, text) : s)),
     playersRemove: (index: number) => setState((s) => (s ? game.playersRemove(s, index) : s)),
     playersClearAll: () => setState((s) => (s ? game.playersClearAll(s) : s)),

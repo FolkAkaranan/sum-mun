@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { AppMode } from "@/lib/types";
 import ModeCard from "@/components/ModeCard";
 import LotteryBox from "@/components/LotteryBox";
@@ -10,12 +11,14 @@ import NeverHaveIEver from "@/components/NeverHaveIEver";
 import ThisOrThat from "@/components/ThisOrThat";
 import MostLikely from "@/components/MostLikely";
 import Charades from "@/components/Charades";
+import WheelSpin from "@/components/WheelSpin";
 import PlayersModal from "@/components/PlayersModal";
 import { useGameState } from "@/lib/useGameState";
 import { useTheme } from "@/lib/useTheme";
 
 const MODES: { key: AppMode; label: string; emoji: string }[] = [
   { key: "lottery", label: "จับฉลาก", emoji: "🎁" },
+  { key: "wheel", label: "วงล้อสุ่ม", emoji: "🎡" },
   { key: "topic", label: "คุยอะไรดี", emoji: "💬" },
   { key: "td", label: "Truth or Dare", emoji: "🔥" },
   { key: "never", label: "Never Have I Ever", emoji: "🙊" },
@@ -47,6 +50,13 @@ export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-6 md:max-w-2xl md:py-10">
       <div className="flex justify-end gap-1">
+        <Link
+          href="/donate"
+          className="rounded-full p-2 text-xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
+          aria-label="สนับสนุนผู้พัฒนา"
+        >
+          ☕
+        </Link>
         <button
           onClick={() => setPlayersOpen(true)}
           className="rounded-full p-2 text-xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
@@ -79,7 +89,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight">🎉 สุ่มมันส์</h1>
             <p className="mt-1 text-sm text-neutral-500">
-              จับฉลาก · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ · ทายคำ
+              จับฉลาก · วงล้อสุ่ม · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ · ทายคำ
             </p>
           </div>
         )}
@@ -121,6 +131,8 @@ export default function Home() {
               onRemove={game.topicRemove}
               onClearAll={game.topicClearAll}
               onRestorePreset={game.topicRestorePreset}
+              onAddCategory={game.topicAddCategory}
+              onRemoveCategory={game.topicRemoveCategory}
             />
           )}
           {mode === "td" && (
@@ -183,6 +195,19 @@ export default function Home() {
               onRemove={game.charadeRemove}
               onClearAll={game.charadeClearAll}
               onRestorePreset={game.charadeRestorePreset}
+              onAddCategory={game.charadeAddCategory}
+              onRemoveCategory={game.charadeRemoveCategory}
+            />
+          )}
+          {mode === "wheel" && (
+            <WheelSpin
+              state={game.state.wheel}
+              players={game.state.players}
+              onDraw={game.wheelDraw}
+              onResolve={game.wheelResolve}
+              onAdd={game.wheelAdd}
+              onRemove={game.wheelRemove}
+              onClearAll={game.wheelClearAll}
             />
           )}
         </>

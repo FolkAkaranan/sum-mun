@@ -106,6 +106,7 @@ export default function Home() {
           {mode === "topic" && (
             <TopicMode
               state={game.state.topic}
+              players={game.state.players}
               onSetCategory={game.topicSetCategory}
               onDraw={game.topicDraw}
               onClear={game.topicClear}
@@ -118,6 +119,7 @@ export default function Home() {
           {mode === "td" && (
             <TruthOrDare
               state={game.state.td}
+              players={game.state.players}
               onSetCategory={game.tdSetCategory}
               onDraw={game.tdDraw}
               onClear={game.tdClear}
@@ -130,6 +132,7 @@ export default function Home() {
           {mode === "never" && (
             <NeverHaveIEver
               state={game.state.never}
+              players={game.state.players}
               onDraw={game.neverDraw}
               onClear={game.neverClear}
               onAdd={game.neverAdd}
@@ -141,6 +144,7 @@ export default function Home() {
           {mode === "thisOrThat" && (
             <ThisOrThat
               state={game.state.thisOrThat}
+              players={game.state.players}
               onDraw={game.thisOrThatDraw}
               onClear={game.thisOrThatClear}
               onAdd={game.thisOrThatAdd}

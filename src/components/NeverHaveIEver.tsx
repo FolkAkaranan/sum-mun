@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { NeverState } from "@/lib/types";
+import type { NeverState, PlayerState } from "@/lib/types";
+import { previewTurn } from "@/lib/gameLogic";
 import Modal from "@/components/Modal";
 
 export default function NeverHaveIEver({
   state,
+  players,
   onDraw,
   onClear,
   onAdd,
@@ -14,6 +16,7 @@ export default function NeverHaveIEver({
   onRestorePreset,
 }: {
   state: NeverState;
+  players: PlayerState;
   onDraw: () => void;
   onClear: () => void;
   onAdd: (text: string) => void;
@@ -23,6 +26,7 @@ export default function NeverHaveIEver({
 }) {
   const [text, setText] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const turn = previewTurn(players);
 
   function addItem(e: React.FormEvent) {
     e.preventDefault();
@@ -47,6 +51,14 @@ export default function NeverHaveIEver({
             ? "ยังไม่มีคำถาม กดตั้งค่าเพื่อเพิ่ม"
             : "แตะเพื่อสุ่มคำถาม \"ไม่เคย...\""}
         </p>
+        {turn.current && (
+          <p className="text-sm font-medium text-emerald-500">
+            🎯 ถึงคิว: <span className="font-semibold">{turn.current}</span>
+            {turn.next && turn.next !== turn.current && (
+              <span className="ml-2 text-neutral-400">ต่อไป: {turn.next}</span>
+            )}
+          </p>
+        )}
       </div>
 
       <button
@@ -64,6 +76,9 @@ export default function NeverHaveIEver({
             {state.lastPlayer && (
               <p className="text-sm text-neutral-500">
                 👤 ผู้เล่นที่ตอบ: <span className="font-semibold">{state.lastPlayer}</span>
+                {state.nextPlayer && state.nextPlayer !== state.lastPlayer && (
+                  <span className="ml-2 text-neutral-400">ต่อไป: {state.nextPlayer}</span>
+                )}
               </p>
             )}
             <div className="flex w-full gap-3">

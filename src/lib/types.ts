@@ -14,6 +14,7 @@ export interface TopicState {
   usedIds: Record<string, string[]>;
   lastDrawn: ListItem | null;
   lastPlayer: string | null;
+  nextPlayer: string | null;
 }
 
 export type TdCategory = "friend" | "lover" | "party" | "family" | "coworker";
@@ -25,6 +26,7 @@ export interface TdState {
   usedIds: Record<TdCategory, Record<TdType, string[]>>;
   lastDrawn: { type: TdType; item: ListItem } | null;
   lastPlayer: string | null;
+  nextPlayer: string | null;
 }
 
 export interface NeverState {
@@ -32,6 +34,7 @@ export interface NeverState {
   usedIds: string[];
   lastDrawn: ListItem | null;
   lastPlayer: string | null;
+  nextPlayer: string | null;
 }
 
 export interface PairItem {
@@ -45,10 +48,12 @@ export interface ThisOrThatState {
   usedIds: string[];
   lastDrawn: PairItem | null;
   lastPlayer: string | null;
+  nextPlayer: string | null;
 }
 
 export interface PlayerState {
   names: string[];
+  turnIndex: number;
 }
 
 export interface RoomState {

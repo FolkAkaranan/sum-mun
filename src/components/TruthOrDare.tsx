@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { TD_CATEGORY_LABEL } from "@/lib/types";
-import type { TdCategory, TdState, TdType } from "@/lib/types";
+import type { PlayerState, TdCategory, TdState, TdType } from "@/lib/types";
+import { previewTurn } from "@/lib/gameLogic";
 import Modal from "@/components/Modal";
 
 const TYPE_LABEL: Record<TdType, string> = { truth: "Truth", dare: "Dare" };
 
 export default function TruthOrDare({
   state,
+  players,
   onSetCategory,
   onDraw,
   onClear,
@@ -18,6 +20,7 @@ export default function TruthOrDare({
   onRestorePreset,
 }: {
   state: TdState;
+  players: PlayerState;
   onSetCategory: (cat: TdCategory) => void;
   onDraw: (t: TdType) => void;
   onClear: () => void;
@@ -32,6 +35,7 @@ export default function TruthOrDare({
 
   const activeCategory = state.activeCategory;
   const bucket = state.categories[activeCategory];
+  const turn = previewTurn(players);
 
   function addItem(e: React.FormEvent) {
     e.preventDefault();
@@ -82,6 +86,14 @@ export default function TruthOrDare({
           </button>
         </div>
         <p className="text-sm text-neutral-400">แตะเพื่อสุ่ม Truth หรือ Dare</p>
+        {turn.current && (
+          <p className="text-sm font-medium text-rose-500">
+            🎯 ถึงคิว: <span className="font-semibold">{turn.current}</span>
+            {turn.next && turn.next !== turn.current && (
+              <span className="ml-2 text-neutral-400">ต่อไป: {turn.next}</span>
+            )}
+          </p>
+        )}
       </div>
 
       <button
@@ -101,6 +113,9 @@ export default function TruthOrDare({
             {state.lastPlayer && (
               <p className="text-sm text-neutral-500">
                 👤 ผู้เล่นที่ตอบ: <span className="font-semibold">{state.lastPlayer}</span>
+                {state.nextPlayer && state.nextPlayer !== state.lastPlayer && (
+                  <span className="ml-2 text-neutral-400">ต่อไป: {state.nextPlayer}</span>
+                )}
               </p>
             )}
             <div className="flex w-full gap-3">

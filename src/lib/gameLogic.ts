@@ -64,9 +64,25 @@ function drawNoRepeat<T extends { id: string }>(
   return { drawn, usedIds: [...nextUsed, drawn.id] };
 }
 
-function pickPlayer(players: string[]): string | null {
-  if (players.length === 0) return null;
-  return players[Math.floor(Math.random() * players.length)];
+/** ดูว่าถึงคิวใครตอบ และใครต่อไป โดยไม่ขยับคิว (ไว้ใช้แสดงผลก่อนกดสุ่ม) */
+export function previewTurn(players: PlayerState): { current: string | null; next: string | null } {
+  const { names, turnIndex } = players;
+  if (names.length === 0) return { current: null, next: null };
+  const idx = turnIndex % names.length;
+  const nextIdx = (idx + 1) % names.length;
+  return { current: names[idx], next: names.length > 1 ? names[nextIdx] : names[idx] };
+}
+
+/** เลื่อนคิวไปคนถัดไป คืนชื่อคนที่ถึงคิว(ตอบรอบนี้), คนถัดไป, และ players ที่อัปเดตคิวแล้ว */
+function advanceTurn(players: PlayerState): {
+  current: string | null;
+  next: string | null;
+  players: PlayerState;
+} {
+  const { current, next } = previewTurn(players);
+  if (current === null) return { current: null, next: null, players };
+  const nextIndex = (players.turnIndex + 1) % players.names.length;
+  return { current, next, players: { ...players, turnIndex: nextIndex } };
 }
 
 const topicPresets = presets.topics as Record<string, string[]>;
@@ -105,6 +121,7 @@ export function createInitialState(): RoomState {
       usedIds: topicUsedIds,
       lastDrawn: null,
       lastPlayer: null,
+      nextPlayer: null,
     },
     td: {
       activeCategory: "friend",
@@ -112,20 +129,23 @@ export function createInitialState(): RoomState {
       usedIds: tdUsedIds,
       lastDrawn: null,
       lastPlayer: null,
+      nextPlayer: null,
     },
     never: {
       items: withIds(neverPresets),
       usedIds: [],
       lastDrawn: null,
       lastPlayer: null,
+      nextPlayer: null,
     },
     thisOrThat: {
       items: withPairIds(thisOrThatPresets.map(([a, b]) => ({ a, b }))),
       usedIds: [],
       lastDrawn: null,
       lastPlayer: null,
+      nextPlayer: null,
     },
-    players: { names: [] },
+    players: { names: [], turnIndex: 0 },
   };
 }
 
@@ -142,6 +162,7 @@ export function ensureRoomState(state: unknown): RoomState {
         usedIds: { ...fresh.topic.usedIds, ...(s.topic.usedIds ?? {}) },
         lastDrawn: s.topic.lastDrawn ?? null,
         lastPlayer: s.topic.lastPlayer ?? null,
+        nextPlayer: s.topic.nextPlayer ?? null,
       }
     : fresh.topic;
 
@@ -152,6 +173,7 @@ export function ensureRoomState(state: unknown): RoomState {
         usedIds: { ...fresh.td.usedIds, ...(s.td.usedIds ?? {}) },
         lastDrawn: s.td.lastDrawn ?? null,
         lastPlayer: s.td.lastPlayer ?? null,
+        nextPlayer: s.td.nextPlayer ?? null,
       }
     : fresh.td;
 
@@ -161,6 +183,7 @@ export function ensureRoomState(state: unknown): RoomState {
         usedIds: s.never.usedIds ?? [],
         lastDrawn: s.never.lastDrawn ?? null,
         lastPlayer: s.never.lastPlayer ?? null,
+        nextPlayer: s.never.nextPlayer ?? null,
       }
     : fresh.never;
 
@@ -170,10 +193,13 @@ export function ensureRoomState(state: unknown): RoomState {
         usedIds: s.thisOrThat.usedIds ?? [],
         lastDrawn: s.thisOrThat.lastDrawn ?? null,
         lastPlayer: s.thisOrThat.lastPlayer ?? null,
+        nextPlayer: s.thisOrThat.nextPlayer ?? null,
       }
     : fresh.thisOrThat;
 
-  const players: PlayerState = s.players ?? fresh.players;
+  const players: PlayerState = s.players
+    ? { names: s.players.names ?? [], turnIndex: s.players.turnIndex ?? 0 }
+    : fresh.players;
 
   return {
     lottery: s.lottery ?? fresh.lottery,
@@ -240,7 +266,13 @@ export function topicSetCategory(room: RoomState, category: string): RoomState {
   if (!room.topic.categories[category]) return room;
   return {
     ...room,
-    topic: { ...room.topic, activeCategory: category, lastDrawn: null, lastPlayer: null },
+    topic: {
+      ...room.topic,
+      activeCategory: category,
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
   };
 }
 
@@ -303,19 +335,22 @@ export function topicDraw(room: RoomState): RoomState {
   const used = room.topic.usedIds[room.topic.activeCategory] ?? [];
   const { drawn, usedIds } = drawNoRepeat(list, used);
   if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
   return {
     ...room,
+    players,
     topic: {
       ...room.topic,
       usedIds: { ...room.topic.usedIds, [room.topic.activeCategory]: usedIds },
       lastDrawn: drawn,
-      lastPlayer: pickPlayer(room.players.names),
+      lastPlayer: current,
+      nextPlayer: next,
     },
   };
 }
 
 export function topicClear(room: RoomState): RoomState {
-  return { ...room, topic: { ...room.topic, lastDrawn: null, lastPlayer: null } };
+  return { ...room, topic: { ...room.topic, lastDrawn: null, lastPlayer: null, nextPlayer: null } };
 }
 
 // ----- truth or dare -----
@@ -323,7 +358,13 @@ export function tdSetCategory(room: RoomState, category: TdCategory): RoomState 
   if (!TD_CATEGORIES.includes(category)) return room;
   return {
     ...room,
-    td: { ...room.td, activeCategory: category, lastDrawn: null, lastPlayer: null },
+    td: {
+      ...room.td,
+      activeCategory: category,
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
   };
 }
 
@@ -416,8 +457,10 @@ export function tdDraw(room: RoomState, type: TdType): RoomState {
   const used = room.td.usedIds[room.td.activeCategory]?.[type] ?? [];
   const { drawn, usedIds } = drawNoRepeat(list, used);
   if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
   return {
     ...room,
+    players,
     td: {
       ...room.td,
       usedIds: {
@@ -425,13 +468,14 @@ export function tdDraw(room: RoomState, type: TdType): RoomState {
         [room.td.activeCategory]: { ...room.td.usedIds[room.td.activeCategory], [type]: usedIds },
       },
       lastDrawn: { type, item: drawn },
-      lastPlayer: pickPlayer(room.players.names),
+      lastPlayer: current,
+      nextPlayer: next,
     },
   };
 }
 
 export function tdClear(room: RoomState): RoomState {
-  return { ...room, td: { ...room.td, lastDrawn: null, lastPlayer: null } };
+  return { ...room, td: { ...room.td, lastDrawn: null, lastPlayer: null, nextPlayer: null } };
 }
 
 // ----- never have i ever -----
@@ -456,19 +500,22 @@ export function neverRestorePreset(room: RoomState): RoomState {
 export function neverDraw(room: RoomState): RoomState {
   const { drawn, usedIds } = drawNoRepeat(room.never.items, room.never.usedIds);
   if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
   return {
     ...room,
+    players,
     never: {
       ...room.never,
       usedIds,
       lastDrawn: drawn,
-      lastPlayer: pickPlayer(room.players.names),
+      lastPlayer: current,
+      nextPlayer: next,
     },
   };
 }
 
 export function neverClear(room: RoomState): RoomState {
-  return { ...room, never: { ...room.never, lastDrawn: null, lastPlayer: null } };
+  return { ...room, never: { ...room.never, lastDrawn: null, lastPlayer: null, nextPlayer: null } };
 }
 
 // ----- this or that -----
@@ -506,34 +553,44 @@ export function thisOrThatRestorePreset(room: RoomState): RoomState {
 export function thisOrThatDraw(room: RoomState): RoomState {
   const { drawn, usedIds } = drawNoRepeat(room.thisOrThat.items, room.thisOrThat.usedIds);
   if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
   return {
     ...room,
+    players,
     thisOrThat: {
       ...room.thisOrThat,
       usedIds,
       lastDrawn: drawn,
-      lastPlayer: pickPlayer(room.players.names),
+      lastPlayer: current,
+      nextPlayer: next,
     },
   };
 }
 
 export function thisOrThatClear(room: RoomState): RoomState {
-  return { ...room, thisOrThat: { ...room.thisOrThat, lastDrawn: null, lastPlayer: null } };
+  return {
+    ...room,
+    thisOrThat: { ...room.thisOrThat, lastDrawn: null, lastPlayer: null, nextPlayer: null },
+  };
 }
 
 // ----- players -----
+// เพิ่ม/ลบ/ล้างรายชื่อผู้เล่น จะรีเซ็ตคิวกลับไปเริ่มที่คนแรกเสมอ กันคิวเพี้ยนตอนรายชื่อเปลี่ยน
 export function playersAdd(room: RoomState, text: string): RoomState {
   const names = parseBulk(text);
   if (names.length === 0) return room;
-  return { ...room, players: { names: [...room.players.names, ...names] } };
+  return { ...room, players: { names: [...room.players.names, ...names], turnIndex: 0 } };
 }
 
 export function playersRemove(room: RoomState, index: number): RoomState {
-  return { ...room, players: { names: room.players.names.filter((_, i) => i !== index) } };
+  return {
+    ...room,
+    players: { names: room.players.names.filter((_, i) => i !== index), turnIndex: 0 },
+  };
 }
 
 export function playersClearAll(room: RoomState): RoomState {
-  return { ...room, players: { names: [] } };
+  return { ...room, players: { names: [], turnIndex: 0 } };
 }
 
 // ----- export / import presets -----
@@ -580,6 +637,7 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
       usedIds: topicUsedIds,
       lastDrawn: null,
       lastPlayer: null,
+      nextPlayer: null,
     },
     td: {
       activeCategory: room.td.activeCategory,
@@ -587,13 +645,21 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
       usedIds: tdUsedIds,
       lastDrawn: null,
       lastPlayer: null,
+      nextPlayer: null,
     },
-    never: { items: d.never ?? room.never.items, usedIds: [], lastDrawn: null, lastPlayer: null },
+    never: {
+      items: d.never ?? room.never.items,
+      usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
     thisOrThat: {
       items: d.thisOrThat ?? room.thisOrThat.items,
       usedIds: [],
       lastDrawn: null,
       lastPlayer: null,
+      nextPlayer: null,
     },
     players: room.players,
   };

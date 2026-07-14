@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { TopicState } from "@/lib/types";
+import type { PlayerState, TopicState } from "@/lib/types";
+import { previewTurn } from "@/lib/gameLogic";
 import Modal from "@/components/Modal";
 
 export default function TopicMode({
   state,
+  players,
   onSetCategory,
   onDraw,
   onClear,
@@ -15,6 +17,7 @@ export default function TopicMode({
   onRestorePreset,
 }: {
   state: TopicState;
+  players: PlayerState;
   onSetCategory: (category: string) => void;
   onDraw: () => void;
   onClear: () => void;
@@ -28,6 +31,7 @@ export default function TopicMode({
 
   const categories = Object.keys(state.categories);
   const activeList = state.categories[state.activeCategory] ?? [];
+  const turn = previewTurn(players);
 
   function addItem(e: React.FormEvent) {
     e.preventDefault();
@@ -68,6 +72,14 @@ export default function TopicMode({
             ? "หมวดนี้ยังไม่มีหัวข้อ กดตั้งค่าเพื่อเพิ่ม"
             : "แตะเพื่อสุ่มหัวข้อคุย"}
         </p>
+        {turn.current && (
+          <p className="text-sm font-medium text-indigo-500">
+            🎯 ถึงคิว: <span className="font-semibold">{turn.current}</span>
+            {turn.next && turn.next !== turn.current && (
+              <span className="ml-2 text-neutral-400">ต่อไป: {turn.next}</span>
+            )}
+          </p>
+        )}
       </div>
 
       <button
@@ -85,6 +97,9 @@ export default function TopicMode({
             {state.lastPlayer && (
               <p className="text-sm text-neutral-500">
                 👤 ผู้เล่นที่ตอบ: <span className="font-semibold">{state.lastPlayer}</span>
+                {state.nextPlayer && state.nextPlayer !== state.lastPlayer && (
+                  <span className="ml-2 text-neutral-400">ต่อไป: {state.nextPlayer}</span>
+                )}
               </p>
             )}
             <div className="flex w-full gap-3">

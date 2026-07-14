@@ -69,7 +69,7 @@ export default function ThisOrThat({
       </button>
 
       {state.lastDrawn && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/50 px-4">
+        <div className="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-black/50 px-4 py-6">
           <div className="flex w-full max-w-xs flex-col items-center gap-4 rounded-2xl bg-white p-6 text-center dark:bg-neutral-900">
             <p className="text-xs uppercase tracking-wide text-fuchsia-500">This or That</p>
             <div className="flex w-full items-center justify-center gap-3">

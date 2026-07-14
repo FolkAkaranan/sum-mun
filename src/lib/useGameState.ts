@@ -86,6 +86,18 @@ export function useGameState() {
       setState((s) => (s ? game.mostLikelyRestorePreset(s) : s)),
     mostLikelyDraw: () => setState((s) => (s ? game.mostLikelyDraw(s) : s)),
     mostLikelyClear: () => setState((s) => (s ? game.mostLikelyClear(s) : s)),
+    charadeSetCategory: (category: string) =>
+      setState((s) => (s ? game.charadeSetCategory(s, category) : s)),
+    charadeAdd: (category: string, text: string) =>
+      setState((s) => (s ? game.charadeAdd(s, category, text) : s)),
+    charadeRemove: (category: string, id: string) =>
+      setState((s) => (s ? game.charadeRemove(s, category, id) : s)),
+    charadeClearAll: (category: string) =>
+      setState((s) => (s ? game.charadeClearAll(s, category) : s)),
+    charadeRestorePreset: (category: string) =>
+      setState((s) => (s ? game.charadeRestorePreset(s, category) : s)),
+    charadeDraw: () => setState((s) => (s ? game.charadeDraw(s) : s)),
+    charadeAssignHolder: () => setState((s) => (s ? game.charadeAssignHolder(s) : s)),
     playersAdd: (text: string) => setState((s) => (s ? game.playersAdd(s, text) : s)),
     playersRemove: (index: number) => setState((s) => (s ? game.playersRemove(s, index) : s)),
     playersClearAll: () => setState((s) => (s ? game.playersClearAll(s) : s)),

@@ -9,6 +9,7 @@ import TruthOrDare from "@/components/TruthOrDare";
 import NeverHaveIEver from "@/components/NeverHaveIEver";
 import ThisOrThat from "@/components/ThisOrThat";
 import MostLikely from "@/components/MostLikely";
+import Charades from "@/components/Charades";
 import PlayersModal from "@/components/PlayersModal";
 import { useGameState } from "@/lib/useGameState";
 import { useTheme } from "@/lib/useTheme";
@@ -20,6 +21,7 @@ const MODES: { key: AppMode; label: string; emoji: string }[] = [
   { key: "never", label: "Never Have I Ever", emoji: "🙊" },
   { key: "thisOrThat", label: "This or That", emoji: "🤔" },
   { key: "mostLikely", label: "ใครมีแนวโน้มจะ", emoji: "🫵" },
+  { key: "charade", label: "ทายคำ", emoji: "🤳" },
 ];
 
 export default function Home() {
@@ -44,26 +46,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-6 md:max-w-2xl md:py-10">
-      <header className="flex items-center gap-3">
-        {mode ? (
-          <button
-            onClick={() => setMode(null)}
-            className="rounded-full p-2 text-2xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
-            aria-label="กลับ"
-          >
-            ←
-          </button>
-        ) : null}
-        {activeMode ? (
-          <h1 className="flex-1 text-xl font-bold">{activeMode.label}</h1>
-        ) : (
-          <div className="flex-1 text-center">
-            <h1 className="text-2xl font-bold tracking-tight">🎉 สุ่มมันส์</h1>
-            <p className="mt-1 text-sm text-neutral-500">
-              จับฉลาก · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ
-            </p>
-          </div>
-        )}
+      <div className="flex justify-end gap-1">
         <button
           onClick={() => setPlayersOpen(true)}
           className="rounded-full p-2 text-xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
@@ -78,6 +61,28 @@ export default function Home() {
         >
           {theme === "dark" ? "☀️" : "🌙"}
         </button>
+      </div>
+
+      <header className="relative flex items-center justify-center">
+        {mode ? (
+          <button
+            onClick={() => setMode(null)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full p-2 text-2xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
+            aria-label="กลับ"
+          >
+            ←
+          </button>
+        ) : null}
+        {activeMode ? (
+          <h1 className="text-xl font-bold">{activeMode.label}</h1>
+        ) : (
+          <div className="text-center">
+            <h1 className="text-2xl font-bold tracking-tight">🎉 สุ่มมันส์</h1>
+            <p className="mt-1 text-sm text-neutral-500">
+              จับฉลาก · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ · ทายคำ
+            </p>
+          </div>
+        )}
       </header>
 
       {!game.state ? (
@@ -165,6 +170,19 @@ export default function Home() {
               onRemove={game.mostLikelyRemove}
               onClearAll={game.mostLikelyClearAll}
               onRestorePreset={game.mostLikelyRestorePreset}
+            />
+          )}
+          {mode === "charade" && (
+            <Charades
+              state={game.state.charade}
+              players={game.state.players}
+              onSetCategory={game.charadeSetCategory}
+              onDraw={game.charadeDraw}
+              onAssignHolder={game.charadeAssignHolder}
+              onAdd={game.charadeAdd}
+              onRemove={game.charadeRemove}
+              onClearAll={game.charadeClearAll}
+              onRestorePreset={game.charadeRestorePreset}
             />
           )}
         </>

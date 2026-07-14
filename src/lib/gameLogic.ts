@@ -1,5 +1,6 @@
 import presets from "@/lib/presets.json";
 import type {
+  CharadeState,
   ListItem,
   MostLikelyState,
   NeverState,
@@ -91,6 +92,7 @@ const tdPresets = presets.truthOrDare as Record<TdCategory, Record<TdType, strin
 const neverPresets = presets.neverHaveIEver as string[];
 const thisOrThatPresets = presets.thisOrThat as [string, string][];
 const mostLikelyPresets = presets.mostLikely as string[];
+const charadePresets = presets.charade as Record<string, string[]>;
 
 export function pickRandom<T>(list: T[]): T | null {
   if (list.length === 0) return null;
@@ -113,6 +115,13 @@ export function createInitialState(): RoomState {
       dare: withIds(presets.truthOrDare[cat].dare),
     };
     tdUsedIds[cat] = { truth: [], dare: [] };
+  }
+
+  const charadeCategories: Record<string, ListItem[]> = {};
+  const charadeUsedIds: Record<string, string[]> = {};
+  for (const [name, items] of Object.entries(presets.charade)) {
+    charadeCategories[name] = withIds(items);
+    charadeUsedIds[name] = [];
   }
 
   return {
@@ -150,6 +159,14 @@ export function createInitialState(): RoomState {
     mostLikely: {
       items: withIds(mostLikelyPresets),
       usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
+    charade: {
+      activeCategory: Object.keys(charadeCategories)[0],
+      categories: charadeCategories,
+      usedIds: charadeUsedIds,
       lastDrawn: null,
       lastPlayer: null,
       nextPlayer: null,
@@ -216,6 +233,17 @@ export function ensureRoomState(state: unknown): RoomState {
       }
     : fresh.mostLikely;
 
+  const charade: CharadeState = s.charade
+    ? {
+        activeCategory: s.charade.activeCategory ?? fresh.charade.activeCategory,
+        categories: { ...fresh.charade.categories, ...s.charade.categories },
+        usedIds: { ...fresh.charade.usedIds, ...(s.charade.usedIds ?? {}) },
+        lastDrawn: s.charade.lastDrawn ?? null,
+        lastPlayer: s.charade.lastPlayer ?? null,
+        nextPlayer: s.charade.nextPlayer ?? null,
+      }
+    : fresh.charade;
+
   const players: PlayerState = s.players
     ? { names: s.players.names ?? [], turnIndex: s.players.turnIndex ?? 0 }
     : fresh.players;
@@ -227,6 +255,7 @@ export function ensureRoomState(state: unknown): RoomState {
     never,
     thisOrThat,
     mostLikely,
+    charade,
     players,
   };
 }
@@ -643,6 +672,101 @@ export function mostLikelyClear(room: RoomState): RoomState {
   };
 }
 
+// ----- charade (ทายคำ ชาเย็นสไตล์) -----
+export function charadeSetCategory(room: RoomState, category: string): RoomState {
+  if (!room.charade.categories[category]) return room;
+  return {
+    ...room,
+    charade: {
+      ...room.charade,
+      activeCategory: category,
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
+  };
+}
+
+export function charadeAdd(room: RoomState, category: string, text: string): RoomState {
+  const texts = parseBulk(text);
+  if (texts.length === 0 || !room.charade.categories[category]) return room;
+  return {
+    ...room,
+    charade: {
+      ...room.charade,
+      categories: {
+        ...room.charade.categories,
+        [category]: [...room.charade.categories[category], ...withIds(texts)],
+      },
+    },
+  };
+}
+
+export function charadeClearAll(room: RoomState, category: string): RoomState {
+  if (!room.charade.categories[category]) return room;
+  return {
+    ...room,
+    charade: {
+      ...room.charade,
+      categories: { ...room.charade.categories, [category]: [] },
+      usedIds: { ...room.charade.usedIds, [category]: [] },
+    },
+  };
+}
+
+export function charadeRestorePreset(room: RoomState, category: string): RoomState {
+  const preset = charadePresets[category];
+  if (!preset) return room;
+  return {
+    ...room,
+    charade: {
+      ...room.charade,
+      categories: { ...room.charade.categories, [category]: withIds(preset) },
+      usedIds: { ...room.charade.usedIds, [category]: [] },
+    },
+  };
+}
+
+export function charadeRemove(room: RoomState, category: string, id: string): RoomState {
+  if (!room.charade.categories[category]) return room;
+  return {
+    ...room,
+    charade: {
+      ...room.charade,
+      categories: {
+        ...room.charade.categories,
+        [category]: room.charade.categories[category].filter((i) => i.id !== id),
+      },
+    },
+  };
+}
+
+/** สุ่มคำถัดไปในหมวดที่เลือก ใช้ตอนเล่นจริง (ไม่ขยับคิวผู้เล่น เพราะสุ่มรัวๆ ระหว่างรอบ) */
+export function charadeDraw(room: RoomState): RoomState {
+  const list = room.charade.categories[room.charade.activeCategory] ?? [];
+  const used = room.charade.usedIds[room.charade.activeCategory] ?? [];
+  const { drawn, usedIds } = drawNoRepeat(list, used);
+  if (!drawn) return room;
+  return {
+    ...room,
+    charade: {
+      ...room.charade,
+      usedIds: { ...room.charade.usedIds, [room.charade.activeCategory]: usedIds },
+      lastDrawn: drawn,
+    },
+  };
+}
+
+/** เลื่อนคิวผู้ถือมือถือรอบใหม่ เรียกตอนกด "เริ่มรอบ" เท่านั้น */
+export function charadeAssignHolder(room: RoomState): RoomState {
+  const { current, next, players } = advanceTurn(room.players);
+  return {
+    ...room,
+    players,
+    charade: { ...room.charade, lastPlayer: current, nextPlayer: next },
+  };
+}
+
 // ----- players -----
 // เพิ่ม/ลบ/ล้างรายชื่อผู้เล่น จะรีเซ็ตคิวกลับไปเริ่มที่คนแรกเสมอ กันคิวเพี้ยนตอนรายชื่อเปลี่ยน
 export function playersAdd(room: RoomState, text: string): RoomState {
@@ -671,6 +795,7 @@ export interface ExportedPresets {
   never: ListItem[];
   thisOrThat: PairItem[];
   mostLikely: ListItem[];
+  charade: Record<string, ListItem[]>;
 }
 
 export function exportPresets(room: RoomState): ExportedPresets {
@@ -682,6 +807,7 @@ export function exportPresets(room: RoomState): ExportedPresets {
     never: room.never.items,
     thisOrThat: room.thisOrThat.items,
     mostLikely: room.mostLikely.items,
+    charade: room.charade.categories,
   };
 }
 
@@ -699,6 +825,10 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
   for (const cat of TD_CATEGORIES) {
     tdUsedIds[cat] = { truth: [], dare: [] };
   }
+
+  const charadeCategories = d.charade ?? room.charade.categories;
+  const charadeUsedIds: Record<string, string[]> = {};
+  for (const key of Object.keys(charadeCategories)) charadeUsedIds[key] = [];
 
   return {
     lottery: { items: d.lottery ?? room.lottery.items, pending: null },
@@ -735,6 +865,14 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
     mostLikely: {
       items: d.mostLikely ?? room.mostLikely.items,
       usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
+    charade: {
+      activeCategory: Object.keys(charadeCategories)[0] ?? fresh.charade.activeCategory,
+      categories: charadeCategories,
+      usedIds: charadeUsedIds,
       lastDrawn: null,
       lastPlayer: null,
       nextPlayer: null,

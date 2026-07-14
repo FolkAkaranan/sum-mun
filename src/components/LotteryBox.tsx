@@ -70,7 +70,7 @@ export default function LotteryBox({
       </button>
 
       {state.pending && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/50 px-4">
+        <div className="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-black/50 px-4 py-6">
           <div className="flex w-full max-w-xs flex-col items-center gap-4 rounded-2xl bg-white p-6 text-center dark:bg-neutral-900 md:max-w-lg md:gap-8 md:rounded-3xl md:p-14">
             <p className="text-xs uppercase tracking-wide text-neutral-400 md:text-base">ผลลัพธ์</p>
             <p className="text-2xl font-bold md:text-5xl">{state.pending.text}</p>

@@ -10,7 +10,7 @@ export default function Modal({
   children: React.ReactNode;
 }) {
   return (
-    <div className="absolute inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
       <div className="flex max-h-[85vh] w-full max-w-md flex-col rounded-t-2xl bg-white p-5 dark:bg-neutral-900 sm:rounded-2xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold">{title}</h2>

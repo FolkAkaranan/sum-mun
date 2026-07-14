@@ -59,6 +59,15 @@ export interface ThisOrThatState {
   nextPlayer: string | null;
 }
 
+export interface CharadeState {
+  activeCategory: string;
+  categories: Record<string, ListItem[]>;
+  usedIds: Record<string, string[]>;
+  lastDrawn: ListItem | null;
+  lastPlayer: string | null;
+  nextPlayer: string | null;
+}
+
 export interface PlayerState {
   names: string[];
   turnIndex: number;
@@ -71,6 +80,7 @@ export interface RoomState {
   never: NeverState;
   thisOrThat: ThisOrThatState;
   mostLikely: MostLikelyState;
+  charade: CharadeState;
   players: PlayerState;
 }
 
@@ -82,4 +92,11 @@ export const TD_CATEGORY_LABEL: Record<TdCategory, string> = {
   coworker: "เพื่อนร่วมงาน",
 };
 
-export type AppMode = "lottery" | "topic" | "td" | "never" | "thisOrThat" | "mostLikely";
+export type AppMode =
+  | "lottery"
+  | "topic"
+  | "td"
+  | "never"
+  | "thisOrThat"
+  | "mostLikely"
+  | "charade";

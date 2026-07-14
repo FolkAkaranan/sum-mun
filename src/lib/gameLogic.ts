@@ -14,6 +14,17 @@ function withIds(list: string[]): ListItem[] {
   return list.map((text) => ({ id: newId(), text }));
 }
 
+/** แยกข้อความที่คั่นด้วย , เป็นหลายรายการ ตัดช่องว่างและช่องว่างล้วนทิ้ง */
+function parseBulk(text: string): string[] {
+  return text
+    .split(",")
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
+}
+
+const topicPresets = presets.topics as Record<string, string[]>;
+const tdPresets = presets.truthOrDare as Record<TdCategory, Record<TdType, string[]>>;
+
 export function pickRandom<T>(list: T[]): T | null {
   if (list.length === 0) return null;
   return list[Math.floor(Math.random() * list.length)];
@@ -50,14 +61,19 @@ export function createInitialState(): RoomState {
 
 // ----- lottery -----
 export function lotteryAdd(room: RoomState, text: string): RoomState {
-  if (!text.trim()) return room;
+  const texts = parseBulk(text);
+  if (texts.length === 0) return room;
   return {
     ...room,
     lottery: {
       ...room.lottery,
-      items: [...room.lottery.items, { id: newId(), text: text.trim() }],
+      items: [...room.lottery.items, ...withIds(texts)],
     },
   };
+}
+
+export function lotteryClearAll(room: RoomState): RoomState {
+  return { ...room, lottery: { ...room.lottery, items: [] } };
 }
 
 export function lotteryRemove(room: RoomState, id: string): RoomState {
@@ -103,15 +119,39 @@ export function topicSetCategory(room: RoomState, category: string): RoomState {
 }
 
 export function topicAdd(room: RoomState, category: string, text: string): RoomState {
-  if (!text.trim() || !room.topic.categories[category]) return room;
+  const texts = parseBulk(text);
+  if (texts.length === 0 || !room.topic.categories[category]) return room;
   return {
     ...room,
     topic: {
       ...room.topic,
       categories: {
         ...room.topic.categories,
-        [category]: [...room.topic.categories[category], { id: newId(), text: text.trim() }],
+        [category]: [...room.topic.categories[category], ...withIds(texts)],
       },
+    },
+  };
+}
+
+export function topicClearAll(room: RoomState, category: string): RoomState {
+  if (!room.topic.categories[category]) return room;
+  return {
+    ...room,
+    topic: {
+      ...room.topic,
+      categories: { ...room.topic.categories, [category]: [] },
+    },
+  };
+}
+
+export function topicRestorePreset(room: RoomState, category: string): RoomState {
+  const preset = topicPresets[category];
+  if (!preset) return room;
+  return {
+    ...room,
+    topic: {
+      ...room.topic,
+      categories: { ...room.topic.categories, [category]: withIds(preset) },
     },
   };
 }
@@ -155,7 +195,8 @@ export function tdAdd(
   type: TdType,
   text: string
 ): RoomState {
-  if (!text.trim() || !room.td.categories[category]) return room;
+  const texts = parseBulk(text);
+  if (texts.length === 0 || !room.td.categories[category]) return room;
   const bucket = room.td.categories[category][type];
   return {
     ...room,
@@ -165,8 +206,37 @@ export function tdAdd(
         ...room.td.categories,
         [category]: {
           ...room.td.categories[category],
-          [type]: [...bucket, { id: newId(), text: text.trim() }],
+          [type]: [...bucket, ...withIds(texts)],
         },
+      },
+    },
+  };
+}
+
+export function tdClearAll(room: RoomState, category: TdCategory, type: TdType): RoomState {
+  if (!room.td.categories[category]) return room;
+  return {
+    ...room,
+    td: {
+      ...room.td,
+      categories: {
+        ...room.td.categories,
+        [category]: { ...room.td.categories[category], [type]: [] },
+      },
+    },
+  };
+}
+
+export function tdRestorePreset(room: RoomState, category: TdCategory, type: TdType): RoomState {
+  const preset = tdPresets[category]?.[type];
+  if (!preset) return room;
+  return {
+    ...room,
+    td: {
+      ...room.td,
+      categories: {
+        ...room.td.categories,
+        [category]: { ...room.td.categories[category], [type]: withIds(preset) },
       },
     },
   };

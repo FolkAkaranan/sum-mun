@@ -14,6 +14,8 @@ export default function TruthOrDare({
   onClear,
   onAdd,
   onRemove,
+  onClearAll,
+  onRestorePreset,
 }: {
   state: TdState;
   onSetCategory: (cat: TdCategory) => void;
@@ -21,6 +23,8 @@ export default function TruthOrDare({
   onClear: () => void;
   onAdd: (category: TdCategory, type: TdType, text: string) => void;
   onRemove: (category: TdCategory, type: TdType, id: string) => void;
+  onClearAll: (category: TdCategory, type: TdType) => void;
+  onRestorePreset: (category: TdCategory, type: TdType) => void;
 }) {
   const [text, setText] = useState("");
   const [settingsType, setSettingsType] = useState<TdType>("truth");
@@ -133,11 +137,11 @@ export default function TruthOrDare({
             ))}
           </div>
 
-          <form onSubmit={addItem} className="mb-4 flex gap-2">
+          <form onSubmit={addItem} className="mb-2 flex gap-2">
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder={`เพิ่ม ${TYPE_LABEL[settingsType]}...`}
+              placeholder={`เพิ่ม ${TYPE_LABEL[settingsType]}... (คั่นด้วย , เพื่อเพิ่มหลายอันพร้อมกัน)`}
               className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
             />
             <button
@@ -147,6 +151,37 @@ export default function TruthOrDare({
               เพิ่ม
             </button>
           </form>
+
+          <div className="mb-4 flex justify-end gap-4">
+            <button
+              onClick={() => {
+                if (
+                  confirm(
+                    `กู้คืน ${TYPE_LABEL[settingsType]} preset เดิม 50 อันของ "${TD_CATEGORY_LABEL[activeCategory]}"? (รายการที่เพิ่ม/ลบเองจะหายไป)`
+                  )
+                )
+                  onRestorePreset(activeCategory, settingsType);
+              }}
+              className="text-sm text-rose-500 hover:underline"
+            >
+              กู้คืน preset
+            </button>
+            {bucket[settingsType].length > 0 && (
+              <button
+                onClick={() => {
+                  if (
+                    confirm(
+                      `ลบ ${TYPE_LABEL[settingsType]} ทั้งหมดของ "${TD_CATEGORY_LABEL[activeCategory]}"?`
+                    )
+                  )
+                    onClearAll(activeCategory, settingsType);
+                }}
+                className="text-sm text-red-500 hover:underline"
+              >
+                ลบทั้งหมด
+              </button>
+            )}
+          </div>
 
           <ul className="flex flex-col gap-2">
             {bucket[settingsType].map((item) => (

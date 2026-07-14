@@ -10,12 +10,14 @@ export default function LotteryBox({
   onResolve,
   onAdd,
   onRemove,
+  onClearAll,
 }: {
   state: LotteryState;
   onDraw: () => void;
   onResolve: (action: "keep" | "discard") => void;
   onAdd: (text: string) => void;
   onRemove: (id: string) => void;
+  onClearAll: () => void;
 }) {
   const [text, setText] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -77,11 +79,11 @@ export default function LotteryBox({
 
       {settingsOpen && (
         <Modal title="จัดการของในกล่อง" onClose={() => setSettingsOpen(false)}>
-          <form onSubmit={addItem} className="mb-4 flex gap-2">
+          <form onSubmit={addItem} className="mb-2 flex gap-2">
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="พิมพ์ข้อความเพื่อเพิ่มลงกล่อง..."
+              placeholder="พิมพ์ข้อความ... (คั่นด้วย , เพื่อเพิ่มหลายอันพร้อมกัน)"
               className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
             />
             <button
@@ -91,6 +93,19 @@ export default function LotteryBox({
               เพิ่ม
             </button>
           </form>
+
+          {state.items.length > 0 && (
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={() => {
+                  if (confirm("ลบของในกล่องทั้งหมด?")) onClearAll();
+                }}
+                className="text-sm text-red-500 hover:underline"
+              >
+                ลบทั้งหมด
+              </button>
+            </div>
+          )}
 
           {state.items.length === 0 ? (
             <p className="rounded-xl border border-dashed border-neutral-300 p-6 text-center text-sm text-neutral-400 dark:border-neutral-700">

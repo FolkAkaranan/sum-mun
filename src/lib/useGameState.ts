@@ -38,6 +38,7 @@ export function useGameState() {
     state,
     lotteryAdd: (text: string) => setState((s) => (s ? game.lotteryAdd(s, text) : s)),
     lotteryRemove: (id: string) => setState((s) => (s ? game.lotteryRemove(s, id) : s)),
+    lotteryClearAll: () => setState((s) => (s ? game.lotteryClearAll(s) : s)),
     lotteryDraw: () => setState((s) => (s ? game.lotteryDraw(s) : s)),
     lotteryResolve: (action: "keep" | "discard") =>
       setState((s) => (s ? game.lotteryResolve(s, action) : s)),
@@ -47,6 +48,10 @@ export function useGameState() {
       setState((s) => (s ? game.topicAdd(s, category, text) : s)),
     topicRemove: (category: string, id: string) =>
       setState((s) => (s ? game.topicRemove(s, category, id) : s)),
+    topicClearAll: (category: string) =>
+      setState((s) => (s ? game.topicClearAll(s, category) : s)),
+    topicRestorePreset: (category: string) =>
+      setState((s) => (s ? game.topicRestorePreset(s, category) : s)),
     topicDraw: () => setState((s) => (s ? game.topicDraw(s) : s)),
     topicClear: () => setState((s) => (s ? game.topicClear(s) : s)),
     tdSetCategory: (category: TdCategory) =>
@@ -55,6 +60,10 @@ export function useGameState() {
       setState((s) => (s ? game.tdAdd(s, category, type, text) : s)),
     tdRemove: (category: TdCategory, type: TdType, id: string) =>
       setState((s) => (s ? game.tdRemove(s, category, type, id) : s)),
+    tdClearAll: (category: TdCategory, type: TdType) =>
+      setState((s) => (s ? game.tdClearAll(s, category, type) : s)),
+    tdRestorePreset: (category: TdCategory, type: TdType) =>
+      setState((s) => (s ? game.tdRestorePreset(s, category, type) : s)),
     tdDraw: (type: TdType) => setState((s) => (s ? game.tdDraw(s, type) : s)),
     tdClear: () => setState((s) => (s ? game.tdClear(s) : s)),
   };

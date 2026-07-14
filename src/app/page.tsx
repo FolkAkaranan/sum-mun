@@ -66,6 +66,7 @@ export default function Home() {
               onResolve={game.lotteryResolve}
               onAdd={game.lotteryAdd}
               onRemove={game.lotteryRemove}
+              onClearAll={game.lotteryClearAll}
             />
           )}
           {mode === "topic" && (
@@ -76,6 +77,8 @@ export default function Home() {
               onClear={game.topicClear}
               onAdd={game.topicAdd}
               onRemove={game.topicRemove}
+              onClearAll={game.topicClearAll}
+              onRestorePreset={game.topicRestorePreset}
             />
           )}
           {mode === "td" && (
@@ -86,6 +89,8 @@ export default function Home() {
               onClear={game.tdClear}
               onAdd={game.tdAdd}
               onRemove={game.tdRemove}
+              onClearAll={game.tdClearAll}
+              onRestorePreset={game.tdRestorePreset}
             />
           )}
         </>

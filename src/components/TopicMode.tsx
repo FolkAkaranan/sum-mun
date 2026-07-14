@@ -11,6 +11,8 @@ export default function TopicMode({
   onClear,
   onAdd,
   onRemove,
+  onClearAll,
+  onRestorePreset,
 }: {
   state: TopicState;
   onSetCategory: (category: string) => void;
@@ -18,6 +20,8 @@ export default function TopicMode({
   onClear: () => void;
   onAdd: (category: string, text: string) => void;
   onRemove: (category: string, id: string) => void;
+  onClearAll: (category: string) => void;
+  onRestorePreset: (category: string) => void;
 }) {
   const [text, setText] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -98,11 +102,11 @@ export default function TopicMode({
 
       {settingsOpen && (
         <Modal title={`จัดการหัวข้อ · ${state.activeCategory}`} onClose={() => setSettingsOpen(false)}>
-          <form onSubmit={addItem} className="mb-4 flex gap-2">
+          <form onSubmit={addItem} className="mb-2 flex gap-2">
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="เพิ่มหัวข้อในหมวดนี้..."
+              placeholder="เพิ่มหัวข้อ... (คั่นด้วย , เพื่อเพิ่มหลายอันพร้อมกัน)"
               className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
             />
             <button
@@ -112,6 +116,29 @@ export default function TopicMode({
               เพิ่ม
             </button>
           </form>
+
+          <div className="mb-4 flex justify-end gap-4">
+            <button
+              onClick={() => {
+                if (confirm(`กู้คืนหัวข้อ preset เดิม 50 อันของ "${state.activeCategory}"? (รายการที่เพิ่ม/ลบเองในหมวดนี้จะหายไป)`))
+                  onRestorePreset(state.activeCategory);
+              }}
+              className="text-sm text-indigo-500 hover:underline"
+            >
+              กู้คืน preset
+            </button>
+            {activeList.length > 0 && (
+              <button
+                onClick={() => {
+                  if (confirm(`ลบหัวข้อทั้งหมดในหมวด "${state.activeCategory}"?`))
+                    onClearAll(state.activeCategory);
+                }}
+                className="text-sm text-red-500 hover:underline"
+              >
+                ลบทั้งหมด
+              </button>
+            )}
+          </div>
 
           <ul className="flex flex-col gap-2">
             {activeList.map((item) => (

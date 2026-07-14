@@ -79,6 +79,13 @@ export function useGameState() {
       setState((s) => (s ? game.thisOrThatRestorePreset(s) : s)),
     thisOrThatDraw: () => setState((s) => (s ? game.thisOrThatDraw(s) : s)),
     thisOrThatClear: () => setState((s) => (s ? game.thisOrThatClear(s) : s)),
+    mostLikelyAdd: (text: string) => setState((s) => (s ? game.mostLikelyAdd(s, text) : s)),
+    mostLikelyRemove: (id: string) => setState((s) => (s ? game.mostLikelyRemove(s, id) : s)),
+    mostLikelyClearAll: () => setState((s) => (s ? game.mostLikelyClearAll(s) : s)),
+    mostLikelyRestorePreset: () =>
+      setState((s) => (s ? game.mostLikelyRestorePreset(s) : s)),
+    mostLikelyDraw: () => setState((s) => (s ? game.mostLikelyDraw(s) : s)),
+    mostLikelyClear: () => setState((s) => (s ? game.mostLikelyClear(s) : s)),
     playersAdd: (text: string) => setState((s) => (s ? game.playersAdd(s, text) : s)),
     playersRemove: (index: number) => setState((s) => (s ? game.playersRemove(s, index) : s)),
     playersClearAll: () => setState((s) => (s ? game.playersClearAll(s) : s)),

@@ -37,6 +37,14 @@ export interface NeverState {
   nextPlayer: string | null;
 }
 
+export interface MostLikelyState {
+  items: ListItem[];
+  usedIds: string[];
+  lastDrawn: ListItem | null;
+  lastPlayer: string | null;
+  nextPlayer: string | null;
+}
+
 export interface PairItem {
   id: string;
   a: string;
@@ -62,6 +70,7 @@ export interface RoomState {
   td: TdState;
   never: NeverState;
   thisOrThat: ThisOrThatState;
+  mostLikely: MostLikelyState;
   players: PlayerState;
 }
 
@@ -73,4 +82,4 @@ export const TD_CATEGORY_LABEL: Record<TdCategory, string> = {
   coworker: "เพื่อนร่วมงาน",
 };
 
-export type AppMode = "lottery" | "topic" | "td" | "never" | "thisOrThat";
+export type AppMode = "lottery" | "topic" | "td" | "never" | "thisOrThat" | "mostLikely";

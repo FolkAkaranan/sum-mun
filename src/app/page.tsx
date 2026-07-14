@@ -8,6 +8,7 @@ import TopicMode from "@/components/TopicMode";
 import TruthOrDare from "@/components/TruthOrDare";
 import NeverHaveIEver from "@/components/NeverHaveIEver";
 import ThisOrThat from "@/components/ThisOrThat";
+import MostLikely from "@/components/MostLikely";
 import PlayersModal from "@/components/PlayersModal";
 import { useGameState } from "@/lib/useGameState";
 import { useTheme } from "@/lib/useTheme";
@@ -18,6 +19,7 @@ const MODES: { key: AppMode; label: string; emoji: string }[] = [
   { key: "td", label: "Truth or Dare", emoji: "🔥" },
   { key: "never", label: "Never Have I Ever", emoji: "🙊" },
   { key: "thisOrThat", label: "This or That", emoji: "🤔" },
+  { key: "mostLikely", label: "ใครมีแนวโน้มจะ", emoji: "🫵" },
 ];
 
 export default function Home() {
@@ -58,7 +60,7 @@ export default function Home() {
           <div className="flex-1 text-center">
             <h1 className="text-2xl font-bold tracking-tight">🎉 สุ่มมันส์</h1>
             <p className="mt-1 text-sm text-neutral-500">
-              จับฉลาก · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That
+              จับฉลาก · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ
             </p>
           </div>
         )}
@@ -151,6 +153,18 @@ export default function Home() {
               onRemove={game.thisOrThatRemove}
               onClearAll={game.thisOrThatClearAll}
               onRestorePreset={game.thisOrThatRestorePreset}
+            />
+          )}
+          {mode === "mostLikely" && (
+            <MostLikely
+              state={game.state.mostLikely}
+              players={game.state.players}
+              onDraw={game.mostLikelyDraw}
+              onClear={game.mostLikelyClear}
+              onAdd={game.mostLikelyAdd}
+              onRemove={game.mostLikelyRemove}
+              onClearAll={game.mostLikelyClearAll}
+              onRestorePreset={game.mostLikelyRestorePreset}
             />
           )}
         </>

@@ -1,6 +1,7 @@
 import presets from "@/lib/presets.json";
 import type {
   ListItem,
+  MostLikelyState,
   NeverState,
   PairItem,
   PlayerState,
@@ -89,6 +90,7 @@ const topicPresets = presets.topics as Record<string, string[]>;
 const tdPresets = presets.truthOrDare as Record<TdCategory, Record<TdType, string[]>>;
 const neverPresets = presets.neverHaveIEver as string[];
 const thisOrThatPresets = presets.thisOrThat as [string, string][];
+const mostLikelyPresets = presets.mostLikely as string[];
 
 export function pickRandom<T>(list: T[]): T | null {
   if (list.length === 0) return null;
@@ -140,6 +142,13 @@ export function createInitialState(): RoomState {
     },
     thisOrThat: {
       items: withPairIds(thisOrThatPresets.map(([a, b]) => ({ a, b }))),
+      usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
+    mostLikely: {
+      items: withIds(mostLikelyPresets),
       usedIds: [],
       lastDrawn: null,
       lastPlayer: null,
@@ -197,6 +206,16 @@ export function ensureRoomState(state: unknown): RoomState {
       }
     : fresh.thisOrThat;
 
+  const mostLikely: MostLikelyState = s.mostLikely
+    ? {
+        items: s.mostLikely.items ?? fresh.mostLikely.items,
+        usedIds: s.mostLikely.usedIds ?? [],
+        lastDrawn: s.mostLikely.lastDrawn ?? null,
+        lastPlayer: s.mostLikely.lastPlayer ?? null,
+        nextPlayer: s.mostLikely.nextPlayer ?? null,
+      }
+    : fresh.mostLikely;
+
   const players: PlayerState = s.players
     ? { names: s.players.names ?? [], turnIndex: s.players.turnIndex ?? 0 }
     : fresh.players;
@@ -207,6 +226,7 @@ export function ensureRoomState(state: unknown): RoomState {
     td,
     never,
     thisOrThat,
+    mostLikely,
     players,
   };
 }
@@ -574,6 +594,55 @@ export function thisOrThatClear(room: RoomState): RoomState {
   };
 }
 
+// ----- most likely to -----
+export function mostLikelyAdd(room: RoomState, text: string): RoomState {
+  const texts = parseBulk(text);
+  if (texts.length === 0) return room;
+  return {
+    ...room,
+    mostLikely: { ...room.mostLikely, items: [...room.mostLikely.items, ...withIds(texts)] },
+  };
+}
+
+export function mostLikelyRemove(room: RoomState, id: string): RoomState {
+  return {
+    ...room,
+    mostLikely: { ...room.mostLikely, items: room.mostLikely.items.filter((i) => i.id !== id) },
+  };
+}
+
+export function mostLikelyClearAll(room: RoomState): RoomState {
+  return { ...room, mostLikely: { ...room.mostLikely, items: [], usedIds: [] } };
+}
+
+export function mostLikelyRestorePreset(room: RoomState): RoomState {
+  return { ...room, mostLikely: { ...room.mostLikely, items: withIds(mostLikelyPresets), usedIds: [] } };
+}
+
+export function mostLikelyDraw(room: RoomState): RoomState {
+  const { drawn, usedIds } = drawNoRepeat(room.mostLikely.items, room.mostLikely.usedIds);
+  if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
+  return {
+    ...room,
+    players,
+    mostLikely: {
+      ...room.mostLikely,
+      usedIds,
+      lastDrawn: drawn,
+      lastPlayer: current,
+      nextPlayer: next,
+    },
+  };
+}
+
+export function mostLikelyClear(room: RoomState): RoomState {
+  return {
+    ...room,
+    mostLikely: { ...room.mostLikely, lastDrawn: null, lastPlayer: null, nextPlayer: null },
+  };
+}
+
 // ----- players -----
 // เพิ่ม/ลบ/ล้างรายชื่อผู้เล่น จะรีเซ็ตคิวกลับไปเริ่มที่คนแรกเสมอ กันคิวเพี้ยนตอนรายชื่อเปลี่ยน
 export function playersAdd(room: RoomState, text: string): RoomState {
@@ -601,6 +670,7 @@ export interface ExportedPresets {
   td: Record<TdCategory, Record<TdType, ListItem[]>>;
   never: ListItem[];
   thisOrThat: PairItem[];
+  mostLikely: ListItem[];
 }
 
 export function exportPresets(room: RoomState): ExportedPresets {
@@ -611,6 +681,7 @@ export function exportPresets(room: RoomState): ExportedPresets {
     td: room.td.categories,
     never: room.never.items,
     thisOrThat: room.thisOrThat.items,
+    mostLikely: room.mostLikely.items,
   };
 }
 
@@ -656,6 +727,13 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
     },
     thisOrThat: {
       items: d.thisOrThat ?? room.thisOrThat.items,
+      usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
+    mostLikely: {
+      items: d.mostLikely ?? room.mostLikely.items,
       usedIds: [],
       lastDrawn: null,
       lastPlayer: null,

@@ -1,6 +1,7 @@
 import presets from "@/lib/presets.json";
 import type {
   CharadeState,
+  EffectCardState,
   ListItem,
   MostLikelyState,
   NeverState,
@@ -93,6 +94,7 @@ const tdPresets = presets.truthOrDare as Record<TdCategory, Record<TdType, strin
 const neverPresets = presets.neverHaveIEver as string[];
 const thisOrThatPresets = presets.thisOrThat as [string, string][];
 const mostLikelyPresets = presets.mostLikely as string[];
+const effectCardPresets = presets.effectCard as string[];
 const charadePresets = presets.charade as Record<string, string[]>;
 
 export function pickRandom<T>(list: T[]): T | null {
@@ -163,6 +165,14 @@ export function createInitialState(): RoomState {
       lastDrawn: null,
       lastPlayer: null,
       nextPlayer: null,
+    },
+    effectCard: {
+      items: withIds(effectCardPresets),
+      usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+      lastPunishment: null,
     },
     charade: {
       activeCategory: Object.keys(charadeCategories)[0],
@@ -235,6 +245,17 @@ export function ensureRoomState(state: unknown): RoomState {
       }
     : fresh.mostLikely;
 
+  const effectCard: EffectCardState = s.effectCard
+    ? {
+        items: s.effectCard.items ?? fresh.effectCard.items,
+        usedIds: s.effectCard.usedIds ?? [],
+        lastDrawn: s.effectCard.lastDrawn ?? null,
+        lastPlayer: s.effectCard.lastPlayer ?? null,
+        nextPlayer: s.effectCard.nextPlayer ?? null,
+        lastPunishment: s.effectCard.lastPunishment ?? null,
+      }
+    : fresh.effectCard;
+
   const charade: CharadeState = s.charade
     ? {
         activeCategory: s.charade.activeCategory ?? fresh.charade.activeCategory,
@@ -266,6 +287,7 @@ export function ensureRoomState(state: unknown): RoomState {
     never,
     thisOrThat,
     mostLikely,
+    effectCard,
     charade,
     wheel,
     players,
@@ -684,6 +706,76 @@ export function mostLikelyClear(room: RoomState): RoomState {
   };
 }
 
+// ----- effect card (มินิเกมหาผู้แพ้ ใครช้าสุดโดนลงโทษ) -----
+export function effectCardAdd(room: RoomState, text: string): RoomState {
+  const texts = parseBulk(text);
+  if (texts.length === 0) return room;
+  return {
+    ...room,
+    effectCard: { ...room.effectCard, items: [...room.effectCard.items, ...withIds(texts)] },
+  };
+}
+
+export function effectCardRemove(room: RoomState, id: string): RoomState {
+  return {
+    ...room,
+    effectCard: { ...room.effectCard, items: room.effectCard.items.filter((i) => i.id !== id) },
+  };
+}
+
+export function effectCardClearAll(room: RoomState): RoomState {
+  return { ...room, effectCard: { ...room.effectCard, items: [], usedIds: [] } };
+}
+
+export function effectCardRestorePreset(room: RoomState): RoomState {
+  return {
+    ...room,
+    effectCard: { ...room.effectCard, items: withIds(effectCardPresets), usedIds: [] },
+  };
+}
+
+export function effectCardDraw(room: RoomState): RoomState {
+  const { drawn, usedIds } = drawNoRepeat(room.effectCard.items, room.effectCard.usedIds);
+  if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
+  return {
+    ...room,
+    players,
+    effectCard: {
+      ...room.effectCard,
+      usedIds,
+      lastDrawn: drawn,
+      lastPlayer: current,
+      nextPlayer: next,
+    },
+  };
+}
+
+export function effectCardClear(room: RoomState): RoomState {
+  return {
+    ...room,
+    effectCard: { ...room.effectCard, lastDrawn: null, lastPlayer: null, nextPlayer: null },
+  };
+}
+
+const PUNISHMENT_TD_CATEGORIES: TdCategory[] = ["friend", "coworker", "party"];
+
+export function effectCardDrawPunishment(room: RoomState): RoomState {
+  const pool = PUNISHMENT_TD_CATEGORIES.flatMap(
+    (category) => room.td.categories[category]?.dare ?? []
+  );
+  const drawn = pickRandom(pool);
+  if (!drawn) return room;
+  return {
+    ...room,
+    effectCard: { ...room.effectCard, lastPunishment: drawn.text },
+  };
+}
+
+export function effectCardClearPunishment(room: RoomState): RoomState {
+  return { ...room, effectCard: { ...room.effectCard, lastPunishment: null } };
+}
+
 // ----- charade (ทายคำ ชาเย็นสไตล์) -----
 export function charadeSetCategory(room: RoomState, category: string): RoomState {
   if (!room.charade.categories[category]) return room;
@@ -923,6 +1015,7 @@ export interface ExportedPresets {
   never: ListItem[];
   thisOrThat: PairItem[];
   mostLikely: ListItem[];
+  effectCard: ListItem[];
   charade: Record<string, ListItem[]>;
   wheel: ListItem[];
 }
@@ -936,6 +1029,7 @@ export function exportPresets(room: RoomState): ExportedPresets {
     never: room.never.items,
     thisOrThat: room.thisOrThat.items,
     mostLikely: room.mostLikely.items,
+    effectCard: room.effectCard.items,
     charade: room.charade.categories,
     wheel: room.wheel.items,
   };
@@ -998,6 +1092,14 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
       lastDrawn: null,
       lastPlayer: null,
       nextPlayer: null,
+    },
+    effectCard: {
+      items: d.effectCard ?? room.effectCard.items,
+      usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+      lastPunishment: null,
     },
     charade: {
       activeCategory: Object.keys(charadeCategories)[0] ?? fresh.charade.activeCategory,

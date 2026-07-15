@@ -90,6 +90,17 @@ export function useGameState() {
       setState((s) => (s ? game.mostLikelyRestorePreset(s) : s)),
     mostLikelyDraw: () => setState((s) => (s ? game.mostLikelyDraw(s) : s)),
     mostLikelyClear: () => setState((s) => (s ? game.mostLikelyClear(s) : s)),
+    effectCardAdd: (text: string) => setState((s) => (s ? game.effectCardAdd(s, text) : s)),
+    effectCardRemove: (id: string) => setState((s) => (s ? game.effectCardRemove(s, id) : s)),
+    effectCardClearAll: () => setState((s) => (s ? game.effectCardClearAll(s) : s)),
+    effectCardRestorePreset: () =>
+      setState((s) => (s ? game.effectCardRestorePreset(s) : s)),
+    effectCardDraw: () => setState((s) => (s ? game.effectCardDraw(s) : s)),
+    effectCardClear: () => setState((s) => (s ? game.effectCardClear(s) : s)),
+    effectCardDrawPunishment: () =>
+      setState((s) => (s ? game.effectCardDrawPunishment(s) : s)),
+    effectCardClearPunishment: () =>
+      setState((s) => (s ? game.effectCardClearPunishment(s) : s)),
     charadeSetCategory: (category: string) =>
       setState((s) => (s ? game.charadeSetCategory(s, category) : s)),
     charadeAdd: (category: string, text: string) =>

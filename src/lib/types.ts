@@ -45,6 +45,15 @@ export interface MostLikelyState {
   nextPlayer: string | null;
 }
 
+export interface EffectCardState {
+  items: ListItem[];
+  usedIds: string[];
+  lastDrawn: ListItem | null;
+  lastPlayer: string | null;
+  nextPlayer: string | null;
+  lastPunishment: string | null;
+}
+
 export interface PairItem {
   id: string;
   a: string;
@@ -89,6 +98,7 @@ export interface RoomState {
   mostLikely: MostLikelyState;
   charade: CharadeState;
   wheel: WheelState;
+  effectCard: EffectCardState;
   players: PlayerState;
 }
 
@@ -108,4 +118,5 @@ export type AppMode =
   | "thisOrThat"
   | "mostLikely"
   | "charade"
-  | "wheel";
+  | "wheel"
+  | "effectCard";

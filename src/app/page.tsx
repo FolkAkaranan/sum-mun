@@ -10,6 +10,7 @@ import TruthOrDare from "@/components/TruthOrDare";
 import NeverHaveIEver from "@/components/NeverHaveIEver";
 import ThisOrThat from "@/components/ThisOrThat";
 import MostLikely from "@/components/MostLikely";
+import EffectCard from "@/components/EffectCard";
 import Charades from "@/components/Charades";
 import WheelSpin from "@/components/WheelSpin";
 import PlayersModal from "@/components/PlayersModal";
@@ -24,6 +25,7 @@ const MODES: { key: AppMode; label: string; emoji: string }[] = [
   { key: "never", label: "Never Have I Ever", emoji: "🙊" },
   { key: "thisOrThat", label: "This or That", emoji: "🤔" },
   { key: "mostLikely", label: "ใครมีแนวโน้มจะ", emoji: "🫵" },
+  { key: "effectCard", label: "มินิเกมหาผู้แพ้", emoji: "🃏" },
   { key: "charade", label: "ทายคำ", emoji: "🤳" },
 ];
 
@@ -89,7 +91,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight">🎉 สุ่มมันส์</h1>
             <p className="mt-1 text-sm text-neutral-500">
-              จับฉลาก · วงล้อสุ่ม · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ · ทายคำ
+              จับฉลาก · วงล้อสุ่ม · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ · มินิเกมหาผู้แพ้ · ทายคำ
             </p>
           </div>
         )}
@@ -182,6 +184,20 @@ export default function Home() {
               onRemove={game.mostLikelyRemove}
               onClearAll={game.mostLikelyClearAll}
               onRestorePreset={game.mostLikelyRestorePreset}
+            />
+          )}
+          {mode === "effectCard" && (
+            <EffectCard
+              state={game.state.effectCard}
+              players={game.state.players}
+              onDraw={game.effectCardDraw}
+              onClear={game.effectCardClear}
+              onAdd={game.effectCardAdd}
+              onRemove={game.effectCardRemove}
+              onClearAll={game.effectCardClearAll}
+              onRestorePreset={game.effectCardRestorePreset}
+              onDrawPunishment={game.effectCardDrawPunishment}
+              onClearPunishment={game.effectCardClearPunishment}
             />
           )}
           {mode === "charade" && (

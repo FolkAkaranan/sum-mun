@@ -1,5 +1,5 @@
 /* ไฟล์นี้ถูก generate อัตโนมัติโดย scripts/gen-sw.js ตอน build ห้ามแก้มือ */
-const CACHE_NAME = "sum-mun-mrrgzs7e";
+const CACHE_NAME = "sum-mun-mrrkcn41";
 
 self.addEventListener("install", () => {
   self.skipWaiting();

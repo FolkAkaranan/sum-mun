@@ -14,6 +14,7 @@ import EffectCard from "@/components/EffectCard";
 import Charades from "@/components/Charades";
 import WheelSpin from "@/components/WheelSpin";
 import PlayersModal from "@/components/PlayersModal";
+import HelpModal from "@/components/HelpModal";
 import { useGameState } from "@/lib/useGameState";
 import { useTheme } from "@/lib/useTheme";
 
@@ -32,6 +33,7 @@ const MODES: { key: AppMode; label: string; emoji: string }[] = [
 export default function Home() {
   const [mode, setMode] = useState<AppMode | null>(null);
   const [playersOpen, setPlayersOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const game = useGameState();
   const { theme, toggleTheme } = useTheme();
 
@@ -52,6 +54,13 @@ export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-6 md:max-w-2xl md:py-10">
       <div className="flex justify-end gap-1">
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="rounded-full p-2 text-xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
+          aria-label="วิธีใช้งาน"
+        >
+          ❓
+        </button>
         <Link
           href="/donate"
           className="rounded-full p-2 text-xl hover:bg-neutral-100 dark:hover:bg-neutral-900"
@@ -228,6 +237,8 @@ export default function Home() {
           )}
         </>
       )}
+
+      {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
 
       {playersOpen && game.state && (
         <PlayersModal

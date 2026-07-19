@@ -52,7 +52,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html:
               process.env.NODE_ENV === "production"
-                ? `if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("${basePath}/sw.js",{scope:"${basePath}/"}).catch(function(){});});}`
+                ? `if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("${basePath}/sw.js",{scope:"${basePath}/"}).then(function(reg){document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")reg.update().catch(function(){});});window.addEventListener("focus",function(){reg.update().catch(function(){});});}).catch(function(){});});var refreshing=false;navigator.serviceWorker.addEventListener("controllerchange",function(){if(refreshing)return;refreshing=true;window.location.reload();});}`
                 : `if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});});if(window.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});});}}`,
           }}
         />

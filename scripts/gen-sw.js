@@ -1,5 +1,14 @@
-/* ไฟล์นี้ถูก generate อัตโนมัติโดย scripts/gen-sw.js ตอน build ห้ามแก้มือ */
-const CACHE_NAME = "sum-mun-mrrgzs7e";
+// สร้าง public/sw.js ใหม่ทุกครั้งที่ build โดยฝัง build id ลงชื่อ cache
+// เพื่อให้ browser เห็นว่าไฟล์ sw.js เปลี่ยน (ไบต์ต่างจากเดิม) แล้ว trigger install/activate ใหม่ทันที
+// รันอัตโนมัติก่อน next build ผ่าน npm "prebuild" hook (ดู package.json)
+const fs = require("fs");
+const path = require("path");
+
+const buildId = Date.now().toString(36);
+const cacheName = `sum-mun-${buildId}`;
+
+const sw = `/* ไฟล์นี้ถูก generate อัตโนมัติโดย scripts/gen-sw.js ตอน build ห้ามแก้มือ */
+const CACHE_NAME = "${cacheName}";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -55,3 +64,8 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+`;
+
+const out = path.join(__dirname, "..", "public", "sw.js");
+fs.writeFileSync(out, sw);
+console.log("wrote", out, "cache:", cacheName);

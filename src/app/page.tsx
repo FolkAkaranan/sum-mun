@@ -11,6 +11,7 @@ import NeverHaveIEver from "@/components/NeverHaveIEver";
 import ThisOrThat from "@/components/ThisOrThat";
 import MostLikely from "@/components/MostLikely";
 import EffectCard from "@/components/EffectCard";
+import CustomMode from "@/components/CustomMode";
 import Charades from "@/components/Charades";
 import WheelSpin from "@/components/WheelSpin";
 import PlayersModal from "@/components/PlayersModal";
@@ -28,6 +29,7 @@ const MODES: { key: AppMode; label: string; emoji: string }[] = [
   { key: "mostLikely", label: "ใครมีแนวโน้มจะ", emoji: "🫵" },
   { key: "effectCard", label: "มินิเกมหาผู้แพ้", emoji: "🃏" },
   { key: "charade", label: "ทายคำ", emoji: "🤳" },
+  { key: "custom", label: "กำหนดเอง", emoji: "📝" },
 ];
 
 export default function Home() {
@@ -100,7 +102,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight">🎉 สุ่มมันส์</h1>
             <p className="mt-1 text-sm text-neutral-500">
-              จับฉลาก · วงล้อสุ่ม · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ · มินิเกมหาผู้แพ้ · ทายคำ
+              จับฉลาก · วงล้อสุ่ม · คุยอะไรดี · Truth or Dare · Never Have I Ever · This or That · ใครมีแนวโน้มจะ · มินิเกมหาผู้แพ้ · ทายคำ · กำหนดเอง
             </p>
           </div>
         )}
@@ -233,6 +235,17 @@ export default function Home() {
               onAdd={game.wheelAdd}
               onRemove={game.wheelRemove}
               onClearAll={game.wheelClearAll}
+            />
+          )}
+          {mode === "custom" && (
+            <CustomMode
+              state={game.state.custom}
+              players={game.state.players}
+              onDraw={game.customDraw}
+              onClear={game.customClear}
+              onAdd={game.customAdd}
+              onRemove={game.customRemove}
+              onClearAll={game.customClearAll}
             />
           )}
         </>

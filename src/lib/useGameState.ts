@@ -101,6 +101,11 @@ export function useGameState() {
       setState((s) => (s ? game.effectCardDrawPunishment(s) : s)),
     effectCardClearPunishment: () =>
       setState((s) => (s ? game.effectCardClearPunishment(s) : s)),
+    customAdd: (text: string) => setState((s) => (s ? game.customAdd(s, text) : s)),
+    customRemove: (id: string) => setState((s) => (s ? game.customRemove(s, id) : s)),
+    customClearAll: () => setState((s) => (s ? game.customClearAll(s) : s)),
+    customDraw: () => setState((s) => (s ? game.customDraw(s) : s)),
+    customClear: () => setState((s) => (s ? game.customClear(s) : s)),
     charadeSetCategory: (category: string) =>
       setState((s) => (s ? game.charadeSetCategory(s, category) : s)),
     charadeAdd: (category: string, text: string) =>

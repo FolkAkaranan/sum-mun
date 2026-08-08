@@ -17,7 +17,7 @@ export interface TopicState {
   nextPlayer: string | null;
 }
 
-export type TdCategory = "friend" | "lover" | "party" | "family" | "coworker";
+export type TdCategory = "friend" | "lover" | "party" | "family" | "coworker" | "adult";
 export type TdType = "truth" | "dare";
 
 export interface TdState {
@@ -52,6 +52,14 @@ export interface EffectCardState {
   lastPlayer: string | null;
   nextPlayer: string | null;
   lastPunishment: string | null;
+}
+
+export interface CustomState {
+  items: ListItem[];
+  usedIds: string[];
+  lastDrawn: ListItem | null;
+  lastPlayer: string | null;
+  nextPlayer: string | null;
 }
 
 export interface PairItem {
@@ -99,6 +107,7 @@ export interface RoomState {
   charade: CharadeState;
   wheel: WheelState;
   effectCard: EffectCardState;
+  custom: CustomState;
   players: PlayerState;
 }
 
@@ -108,6 +117,7 @@ export const TD_CATEGORY_LABEL: Record<TdCategory, string> = {
   party: "ปาร์ตี้",
   family: "ครอบครัว",
   coworker: "เพื่อนร่วมงาน",
+  adult: "18+",
 };
 
 export type AppMode =
@@ -119,4 +129,5 @@ export type AppMode =
   | "mostLikely"
   | "charade"
   | "wheel"
-  | "effectCard";
+  | "effectCard"
+  | "custom";

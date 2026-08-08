@@ -1,6 +1,7 @@
 import presets from "@/lib/presets.json";
 import type {
   CharadeState,
+  CustomState,
   EffectCardState,
   ListItem,
   MostLikelyState,
@@ -16,7 +17,7 @@ import type {
   WheelState,
 } from "@/lib/types";
 
-const TD_CATEGORIES: TdCategory[] = ["friend", "lover", "party", "family", "coworker"];
+const TD_CATEGORIES: TdCategory[] = ["friend", "lover", "party", "family", "coworker", "adult"];
 
 function newId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -174,6 +175,13 @@ export function createInitialState(): RoomState {
       nextPlayer: null,
       lastPunishment: null,
     },
+    custom: {
+      items: [],
+      usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
+    },
     charade: {
       activeCategory: Object.keys(charadeCategories)[0],
       categories: charadeCategories,
@@ -256,6 +264,16 @@ export function ensureRoomState(state: unknown): RoomState {
       }
     : fresh.effectCard;
 
+  const custom: CustomState = s.custom
+    ? {
+        items: s.custom.items ?? fresh.custom.items,
+        usedIds: s.custom.usedIds ?? [],
+        lastDrawn: s.custom.lastDrawn ?? null,
+        lastPlayer: s.custom.lastPlayer ?? null,
+        nextPlayer: s.custom.nextPlayer ?? null,
+      }
+    : fresh.custom;
+
   const charade: CharadeState = s.charade
     ? {
         activeCategory: s.charade.activeCategory ?? fresh.charade.activeCategory,
@@ -288,6 +306,7 @@ export function ensureRoomState(state: unknown): RoomState {
     thisOrThat,
     mostLikely,
     effectCard,
+    custom,
     charade,
     wheel,
     players,
@@ -776,6 +795,51 @@ export function effectCardClearPunishment(room: RoomState): RoomState {
   return { ...room, effectCard: { ...room.effectCard, lastPunishment: null } };
 }
 
+// ----- custom (โหมดกำหนดเอง ไม่มี preset ให้ผู้ใช้เพิ่มเนื้อหาเอง) -----
+export function customAdd(room: RoomState, text: string): RoomState {
+  const texts = parseBulk(text);
+  if (texts.length === 0) return room;
+  return {
+    ...room,
+    custom: { ...room.custom, items: [...room.custom.items, ...withIds(texts)] },
+  };
+}
+
+export function customRemove(room: RoomState, id: string): RoomState {
+  return {
+    ...room,
+    custom: { ...room.custom, items: room.custom.items.filter((i) => i.id !== id) },
+  };
+}
+
+export function customClearAll(room: RoomState): RoomState {
+  return { ...room, custom: { ...room.custom, items: [], usedIds: [] } };
+}
+
+export function customDraw(room: RoomState): RoomState {
+  const { drawn, usedIds } = drawNoRepeat(room.custom.items, room.custom.usedIds);
+  if (!drawn) return room;
+  const { current, next, players } = advanceTurn(room.players);
+  return {
+    ...room,
+    players,
+    custom: {
+      ...room.custom,
+      usedIds,
+      lastDrawn: drawn,
+      lastPlayer: current,
+      nextPlayer: next,
+    },
+  };
+}
+
+export function customClear(room: RoomState): RoomState {
+  return {
+    ...room,
+    custom: { ...room.custom, lastDrawn: null, lastPlayer: null, nextPlayer: null },
+  };
+}
+
 // ----- charade (ทายคำ ชาเย็นสไตล์) -----
 export function charadeSetCategory(room: RoomState, category: string): RoomState {
   if (!room.charade.categories[category]) return room;
@@ -1016,6 +1080,7 @@ export interface ExportedPresets {
   thisOrThat: PairItem[];
   mostLikely: ListItem[];
   effectCard: ListItem[];
+  custom: ListItem[];
   charade: Record<string, ListItem[]>;
   wheel: ListItem[];
 }
@@ -1030,6 +1095,7 @@ export function exportPresets(room: RoomState): ExportedPresets {
     thisOrThat: room.thisOrThat.items,
     mostLikely: room.mostLikely.items,
     effectCard: room.effectCard.items,
+    custom: room.custom.items,
     charade: room.charade.categories,
     wheel: room.wheel.items,
   };
@@ -1100,6 +1166,13 @@ export function importPresets(room: RoomState, data: unknown): RoomState {
       lastPlayer: null,
       nextPlayer: null,
       lastPunishment: null,
+    },
+    custom: {
+      items: d.custom ?? room.custom.items,
+      usedIds: [],
+      lastDrawn: null,
+      lastPlayer: null,
+      nextPlayer: null,
     },
     charade: {
       activeCategory: Object.keys(charadeCategories)[0] ?? fresh.charade.activeCategory,

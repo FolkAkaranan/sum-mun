@@ -33,10 +33,13 @@ export default function TruthOrDare({
   const [text, setText] = useState("");
   const [settingsType, setSettingsType] = useState<TdType>("truth");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [adultUnlocked, setAdultUnlocked] = useState(false);
+  const [adultGateOpen, setAdultGateOpen] = useState(false);
 
   const activeCategory = state.activeCategory;
   const bucket = state.categories[activeCategory];
   const turn = previewTurn(players);
+  const isAdultLocked = activeCategory === "adult" && !adultUnlocked;
 
   function addItem(e: React.FormEvent) {
     e.preventDefault();
@@ -45,24 +48,46 @@ export default function TruthOrDare({
     setText("");
   }
 
+  function selectCategory(cat: TdCategory) {
+    if (cat === "adult" && !adultUnlocked) {
+      setAdultGateOpen(true);
+      return;
+    }
+    onSetCategory(cat);
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center justify-between gap-6 py-4">
       <div className="flex w-full flex-wrap justify-center gap-2">
         {(Object.keys(TD_CATEGORY_LABEL) as TdCategory[]).map((cat) => (
           <button
             key={cat}
-            onClick={() => onSetCategory(cat)}
+            onClick={() => selectCategory(cat)}
             className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
               cat === activeCategory
                 ? "bg-rose-600 text-white"
                 : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
             }`}
           >
-            {TD_CATEGORY_LABEL[cat]}
+            {cat === "adult" && !adultUnlocked ? "🔞 18+ 🔒" : TD_CATEGORY_LABEL[cat]}
           </button>
         ))}
       </div>
 
+      {isAdultLocked ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          <p className="text-5xl">🔞</p>
+          <p className="text-sm text-neutral-500">
+            หมวดนี้มีเนื้อหาสำหรับผู้ใหญ่ ต้องยืนยันอายุก่อนเข้าใช้งาน
+          </p>
+          <button
+            onClick={() => setAdultGateOpen(true)}
+            className="rounded-xl bg-rose-600 px-4 py-2 font-medium text-white hover:bg-rose-700"
+          >
+            ยืนยันอายุเพื่อเข้าดู
+          </button>
+        </div>
+      ) : (
       <div className="flex flex-1 flex-col items-center justify-center gap-6">
         <div className="flex gap-6">
           <button
@@ -102,6 +127,7 @@ export default function TruthOrDare({
           </p>
         )}
       </div>
+      )}
 
       <button
         onClick={() => setSettingsOpen(true)}
@@ -230,6 +256,33 @@ export default function TruthOrDare({
               </li>
             ))}
           </ul>
+        </Modal>
+      )}
+
+      {adultGateOpen && (
+        <Modal title="🔞 ยืนยันอายุ" onClose={() => setAdultGateOpen(false)}>
+          <p className="mb-4 text-sm text-neutral-600 dark:text-neutral-300">
+            หมวด 18+ มีคำถาม/คำท้าสำหรับผู้ใหญ่ ยืนยันว่าคุณอายุ 18 ปีขึ้นไป
+            และผู้เล่นทุกคนในวงยินยอมเล่นเนื้อหานี้
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setAdultGateOpen(false)}
+              className="flex-1 rounded-xl bg-neutral-200 py-2.5 font-medium hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+            >
+              ยกเลิก
+            </button>
+            <button
+              onClick={() => {
+                setAdultUnlocked(true);
+                setAdultGateOpen(false);
+                onSetCategory("adult");
+              }}
+              className="flex-1 rounded-xl bg-rose-600 py-2.5 font-medium text-white hover:bg-rose-700"
+            >
+              ยืนยัน อายุ 18+
+            </button>
+          </div>
         </Modal>
       )}
     </div>
